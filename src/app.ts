@@ -1,4 +1,4 @@
-const {app, server, express} = require('./utils/initialize_app');
+const {app, server, express} = require('./utils/init/initialize_app');
 const HttpError = require('./errors/http-errors');
 const PORT = process.env.PORT || 8000;
 
@@ -7,7 +7,7 @@ if(process.env.NODE_ENV !== 'production') {
 }
 
 // Initialize MongoDB
-require('./utils/initialize_db');
+require('./utils/init/initialize_db');
 
 app.use(async (req, res, next) => {
     const error = await HttpError.NotFound();
