@@ -10,6 +10,11 @@ require('./config/env_setup');
 // Initialize MongoDB
 require('./utils/init/initialize_db');
 
+app.use(express.json());
+
+// Require the routes
+require('./routes/routes');
+
 app.use(async (req, res, next) => {
     const error = await HttpErrors.NotFound();
     next(error);
