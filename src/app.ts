@@ -2,9 +2,7 @@ const {app, server, express} = require('./utils/init/initialize_app');
 const HttpError = require('./errors/http-errors');
 const PORT = process.env.PORT || 8000;
 
-if(process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
+require('./config/env_setup');
 
 // Initialize MongoDB
 require('./utils/init/initialize_db');
