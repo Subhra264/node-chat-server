@@ -21,9 +21,12 @@ app.use(async (req, res, next) => {
 });
 
 app.use(async (err: HttpError, req, res, next) => {
-    res.status(err.status).json({
-        status: err.status,
-        message: err.message
+    return res.status(err.status).json({
+        type: 'error',
+        error: {
+            status: err.status,
+            message: err.message
+        }
     });
 });
 

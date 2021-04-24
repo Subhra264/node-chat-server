@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name: {
         type: String,
-        trim: true,
         required: true
     },
 
@@ -30,7 +29,7 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         minlength: 6,
-        maxlength: 12
+        maxlength: 20
     },
 
     image: {
