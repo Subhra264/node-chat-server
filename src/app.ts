@@ -1,4 +1,5 @@
-const {app, server, express} = require('./utils/init/initialize_app');
+import express, { Request, Response, NextFunction } from 'express';
+const {app, server } = require('./utils/init/initialize_app');
 const HttpErrors = require('./errors/http-errors');
 
 import HttpError from './errors/HttpError';
@@ -15,12 +16,12 @@ app.use(express.json());
 // Require the routes
 require('./routes/routes');
 
-app.use(async (req, res, next) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
     const error = await HttpErrors.NotFound();
     next(error);
 });
 
-app.use(async (err: HttpError, req, res, next) => {
+app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     return res.status(err.status).json({
         type: 'error',
         error: {

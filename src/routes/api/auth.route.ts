@@ -1,17 +1,17 @@
 const { createAccount } = require('../../controllers/auth.controller');
-
-const express = require('express');
+import express, { Request, Response, NextFunction } from 'express';
 const Router = express.Router();
 
-Router.post('/signup', async (req, res, next) => {
+Router.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
 
     try {
 
-        await createAccount(req, res, next);
+        const hash = await createAccount(req, res);
 
         res.json({
             type: 'success',
-            message: "Yep! running..."
+            // message: "Signed Up successfully!"
+            message: hash
         });
     } catch(err) {
         next(err);

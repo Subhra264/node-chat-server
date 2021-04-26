@@ -11,6 +11,7 @@
   "author": "Subhra264",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^3.0.1",
     "@types/express": "^4.17.11",
     "@types/mongoose": "^5.10.5",
     "@types/node": "^14.14.41",
