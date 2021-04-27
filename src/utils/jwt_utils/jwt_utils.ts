@@ -1,6 +1,12 @@
 import jwt from 'jsonwebtoken';
 import HttpErrors from '../../errors/http-errors';
 
+/**
+ * Returns the signed JsonWebToken
+ * 
+ * @param userId 
+ * @returns Promise that resolves to a string
+ */
 export async function signAccessToken(userId: string): Promise<string> {
     
     return new Promise((resolve, reject) => {

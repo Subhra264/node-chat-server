@@ -60,7 +60,7 @@ export = {
     },
 
     /**
-     * Returns a Not Acceptable HttpErro with status code 406
+     * Returns a Not Acceptable HttpError with status code 406
      * 
      * @param msg 
      * @returns Returns a Promise that resolves to a HttpError
@@ -90,7 +90,7 @@ export = {
     },
 
     /**
-     * Returns a Internal Server Error HttpError with status code 500
+     * Returns a Internal Server HttpError with status code 500
      * 
      * @param msg 
      * @returns Returns a Promise that resolves to a HttpError

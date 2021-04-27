@@ -54,6 +54,7 @@ export default {
             return accessToken;
 
         } catch(err) {
+            // Joi Errors must be converted to HttpErrors
             if(err.isJoi) {
                 err = await HttpErrors.BadRequest(err.message);
             }
