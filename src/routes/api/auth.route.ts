@@ -6,7 +6,7 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
 
     try {
 
-        const hash = await createAccount(req, res);
+        const hash = await createAccount(req, res, next);
 
         res.json({
             type: 'success',

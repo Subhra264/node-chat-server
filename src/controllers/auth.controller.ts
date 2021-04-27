@@ -1,12 +1,12 @@
 import HttpErrors from "../errors/http-errors";
 import User from "../models/User.model";
 import userSchema from "../utils/validate_schema/validate_user"
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Document } from "mongoose";
-import hashPassword from '../utils/encryption_utils/hash_password';
+import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 
 export = {
-    createAccount: async (req: Request, res: Response) => {
+    createAccount: async (req: Request, res: Response, next: NextFunction) => {
 
         try {
             // Validate the req.body
@@ -29,15 +29,33 @@ export = {
         } catch(err) {
             // TODO: Create a Error Converter that converts errors to HttpErrors
             if(err.isJoi) {
-                err = await HttpErrors.BadRequest('Please fill all the fields properly!');
+                err = await HttpErrors.BadRequest(err.message);
             }
-            throw err;
+            return next(err);
         }
     },
 
-    authenticateUser: async (req: Request, res: Response) => {
-        const {email, password} = req.body;
+    authenticateUser: async (req: Request, res: Response, next: NextFunction) => {
 
+        try {
+            const validatedUser = await userSchema.validateAsync(req.body);
+            const user = await User.findOne({
+                email: validatedUser.email
+            });
+
+            if(!user) throw HttpErrors.Unauthorized('email/password not valid!');
+
+            const matchedPassword: boolean = await user.validatePassword();
+            if(!matchedPassword) throw HttpErrors.Unauthorized('email/password not valid!');
+
+            // const accessToken: string = await signAccessToken(user.id);
+            
+        } catch(err) {
+            if(err.isJoi) {
+                err = await HttpErrors.BadRequest(err.message);
+            }
+            return next(err);
+        }
         
     }
 }
