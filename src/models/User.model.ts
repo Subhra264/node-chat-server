@@ -1,7 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { comparePassword } from '../utils/encryption_utils/bcrypt_utils';
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+interface User extends Document {
+    name: string;
+    userName: string;
+    email: string;
+    password: string;
+    image?: string;
+    about: string;
+}
+
+const UserSchema = new Schema<User>({
     name: {
         type: String,
         required: true
@@ -82,5 +92,13 @@ const UserSchema = new Schema({
         type: String
     }
 });
+
+UserSchema.methods.validatePassword = async function(password: string): Promise<boolean> {
+    try {
+        return await comparePassword(password, this.password);
+    } catch(err) {
+        throw err;
+    }
+}
 
 export = mongoose.model("User", UserSchema);

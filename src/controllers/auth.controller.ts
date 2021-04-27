@@ -4,8 +4,9 @@ import userSchema from "../utils/validate_schema/validate_user"
 import { NextFunction, Request, Response } from 'express';
 import { Document } from "mongoose";
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
+import { signAccessToken } from '../utils/jwt_utils/jwt_utils';
 
-export = {
+export default {
     createAccount: async (req: Request, res: Response, next: NextFunction) => {
 
         try {
@@ -31,11 +32,11 @@ export = {
             if(err.isJoi) {
                 err = await HttpErrors.BadRequest(err.message);
             }
-            return next(err);
+            throw err;
         }
     },
 
-    authenticateUser: async (req: Request, res: Response, next: NextFunction) => {
+    authenticateUser: async (req: Request, res: Response, next: NextFunction): Promise<string> => {
 
         try {
             const validatedUser = await userSchema.validateAsync(req.body);
@@ -48,13 +49,15 @@ export = {
             const matchedPassword: boolean = await user.validatePassword();
             if(!matchedPassword) throw HttpErrors.Unauthorized('email/password not valid!');
 
-            // const accessToken: string = await signAccessToken(user.id);
-            
+            const accessToken: string = await signAccessToken(user.id);
+
+            return accessToken;
+
         } catch(err) {
             if(err.isJoi) {
                 err = await HttpErrors.BadRequest(err.message);
             }
-            return next(err);
+            throw err;
         }
         
     }
