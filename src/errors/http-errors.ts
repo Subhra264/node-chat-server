@@ -1,6 +1,15 @@
 /* Exports the HttpErrors for error handling*/
 
-import HttpError from './HttpError';
+class HttpError extends Error {
+    public status: number;
+    public type: string;
+
+    constructor(msg: string, status: number) {
+        super(msg);
+        this.status = status;
+        this.type = 'HttpError';
+    }
+}
 
 const createError = (msg: string, errCode: number): HttpError => {
     const error = new HttpError(msg, errCode);
