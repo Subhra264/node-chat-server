@@ -4,7 +4,8 @@
   "description": "Backend application for node-chat-desktop and node-chat-web",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "ts-node ./src/app.ts",
+    "dev:nodemon": "nodemon",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix"
   },
