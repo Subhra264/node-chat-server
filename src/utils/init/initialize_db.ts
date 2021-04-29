@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+let isConnected: boolean = false;
 
 mongoose.connect( process.env.MONGOURI, {
     useNewUrlParser: true,
@@ -7,6 +8,7 @@ mongoose.connect( process.env.MONGOURI, {
 
 mongoose.connection.on('connected', () => {
     console.log('Connected to MongoDB!');
+    isConnected = true;
 });
 
 mongoose.connection.on('error', (err: Error) => {
@@ -19,7 +21,7 @@ mongoose.connection.on('disconnected', () => {
 });
 
 process.on('SIGINT', async () => {
-    await mongoose.connection.close();
+    if(isConnected) await mongoose.connection.close();
     process.exit();
 });
 

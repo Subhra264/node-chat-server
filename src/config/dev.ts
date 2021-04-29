@@ -1,23 +1,15 @@
-import fs from 'fs';
 import path from 'path';
-import generateJWTKeys from '../utils/jwt_utils/generate_key';
+import { appendKeysToENV, removeKeysFromENV } from '../utils/config_utils/env_io';
 
-function appendKeysToENV(): void {
-    const [accessTokenKey, refreshTokenKey] = generateJWTKeys();
+const envPath = path.resolve(__dirname, '../../.env');
 
-    try {
-        const envPathName = path.resolve(__dirname, '../../.env');
-
-        fs.appendFileSync(envPathName, `JWT_ACCESS_KEY=${accessTokenKey}\n`);
-        fs.appendFileSync(envPathName, `JWT_REFRESH_KEY=${refreshTokenKey}`);
-
-    } catch(err) {
-        console.error(err);
-        console.log('exiting...');
-        process.exit();
-    }
+function appendToENV() {
+    appendKeysToENV(envPath);
 }
 
-appendKeysToENV();
+process.on('exit', () => {
+    removeKeysFromENV(envPath);
+});
 
+appendToENV();
 require('dotenv').config();
