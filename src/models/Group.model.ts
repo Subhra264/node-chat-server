@@ -1,7 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose, { Document } from "mongoose";
 const Schema = mongoose.Schema;
 
-const GroupSchema = new Schema({
+interface Group extends Document{
+    name: string;
+    image: string;
+    description?: string;
+}
+
+const GroupSchema = new Schema<Group>({
     name: {
         type: String,
         required: true,
@@ -10,12 +16,20 @@ const GroupSchema = new Schema({
     },
 
     image: {
-        type: String
+        type: String,
+        required: true
     },
 
     description: {
         type: String  
     },
+
+    admins: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
 
     users: [
         {
