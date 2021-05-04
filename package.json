@@ -2,9 +2,9 @@
   "name": "node-chat-server",
   "version": "1.0.0",
   "description": "Backend application for node-chat-desktop and node-chat-web",
-  "main": "app.js",
+  "main": "cluster.js",
   "scripts": {
-    "dev": "ts-node ./src/app.ts",
+    "dev": "ts-node ./src/cluster.ts",
     "dev:nodemon": "nodemon",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix"

@@ -6,11 +6,6 @@ import HttpError from './errors/HttpError';
 
 const PORT = process.env.PORT || 8000;
 
-require('./config/env_setup');
-
-// Initialize MongoDB
-require('./utils/init/initialize_db');
-
 app.use(express.json());
 
 // Require the routes
