@@ -4,6 +4,8 @@ const HttpErrors = require('./errors/http-errors');
 
 import HttpError from './errors/HttpError';
 
+require('./utils/init/initialize_redis');
+
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());

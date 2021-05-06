@@ -12,7 +12,7 @@ mongoose.connection.on('connected', () => {
 });
 
 mongoose.connection.on('error', (err: Error) => {
-    console.log('Error connecting MongoDB:', err);
+    console.error('Error connecting MongoDB:', err);
     process.exit();
 });
 

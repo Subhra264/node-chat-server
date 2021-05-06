@@ -11,8 +11,13 @@ if (cluster.isMaster) {
     }
 
     cluster.on('exit', (worker: Worker, code: number, signal: string): void => {
-        console.log(`process ${worker.process.pid} died \ncode = ${code} \nsignal=${signal}`);
-        cluster.fork();
+        console.log(`process ${worker.process.pid} died, code = ${code}, signal=${signal}`);
+        if (code !== 5) {
+            cluster.fork();
+        } else if (!Object.keys(cluster.workers).length) {
+            console.error('Couldn\'t connect to Redis storage, check your redis credentials...');
+            process.exit();
+        }
     });
 
 } else {
