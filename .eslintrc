@@ -9,5 +9,9 @@
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended"
     ],
-    "rules": {}
+    "rules": {
+      "@typescript-eslint/no-var-requires": 0,
+      "no-useless-catch": 1,
+      "no-ex-assign": 0
+    }
   }

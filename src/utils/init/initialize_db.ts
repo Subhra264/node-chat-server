@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-let isConnected: boolean = false;
+let isConnected = false;
 
 mongoose.connect( process.env.MONGOURI, {
     useNewUrlParser: true,

@@ -18,7 +18,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     next(error);
 });
 
-app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
+app.use(async (err: HttpError, req: Request, res: Response) => {
     return res.status(err.status).json({
         type: 'error',
         error: {

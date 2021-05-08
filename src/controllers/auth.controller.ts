@@ -7,7 +7,7 @@ import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 import { signAccessToken } from '../utils/jwt_utils/jwt_utils';
 
 export default {
-    createAccount: async (req: Request, res: Response, next: NextFunction) => {
+    createAccount: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         try {
             // Validate the req.body
