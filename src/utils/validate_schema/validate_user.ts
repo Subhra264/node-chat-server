@@ -2,7 +2,9 @@ const Joi = require('joi');
 
 const userSchema = Joi.object({
     name: Joi.string()
-        .required(),
+        .trim()
+        .min(3)
+        .max(40),
 
     userName: Joi.string()
         .trim()

@@ -3,18 +3,20 @@ import { comparePassword } from '../utils/encryption_utils/bcrypt_utils';
 const Schema = mongoose.Schema;
 
 interface User extends Document {
-    name: string;
+    name?: string;
     userName: string;
     email: string;
     password: string;
-    image?: string;
+    profilePic?: string;
     about: string;
 }
 
 const UserSchema = new Schema<User>({
     name: {
         type: String,
-        required: true
+        minLength: 3,
+        maxLength:40,
+        trim: true
     },
 
     userName: {
@@ -42,7 +44,7 @@ const UserSchema = new Schema<User>({
         maxlength: 20
     },
 
-    image: {
+    profilePic: {
         type: String
     },
 
