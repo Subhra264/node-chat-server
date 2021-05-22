@@ -11,6 +11,10 @@ if (!redisURI && !redisPwd) {
 }
 
 const redisClient: string[] = (redisURI as string).split(':');
+if (redisClient.length !== 2) {
+    console.log('Error with redis URI...');
+    process.exit(5);
+}
 
 const pubClient: RedisClient = redis.createClient({
     host: redisClient[0],
