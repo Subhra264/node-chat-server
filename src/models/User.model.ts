@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema as SchemaType } from 'mongoose';
+import mongoose, { Document, Model, Schema as SchemaType } from 'mongoose';
 import { comparePassword } from '../utils/encryption_utils/bcrypt_utils';
 const Schema = mongoose.Schema;
 
@@ -10,15 +10,10 @@ export interface User extends Document {
     profilePic?: string;
     about: string;
     refreshToken?: string;
-    groups?: [
-        {
-            name: string;
-            reference: SchemaType.Types.ObjectId;
-        }
-    ];
-    friends?: [SchemaType.Types.ObjectId];
-    sentFriendRequests?: [SchemaType.Types.ObjectId];
-    receivedFriendRequests?: [SchemaType.Types.ObjectId];
+    groups?: [ SchemaType.Types.ObjectId ];
+    friends?: [ SchemaType.Types.ObjectId ];
+    sentFriendRequests?: [ SchemaType.Types.ObjectId ];
+    receivedFriendRequests?: [ SchemaType.Types.ObjectId ];
 }
 
 const UserSchema = new Schema<User>({
@@ -65,11 +60,8 @@ const UserSchema = new Schema<User>({
 
     groups: [
         {
-            name: String,
-            reference :  {
-                type: Schema.Types.ObjectId,
-                ref: "Group"
-            } 
+            type: Schema.Types.ObjectId,
+            ref: "Group"
         }
     ],
 
@@ -107,4 +99,8 @@ UserSchema.methods.validatePassword = async function(password: string): Promise<
     }
 }
 
-export default mongoose.model<User>("User", UserSchema);
+interface UserModel extends Model<User> {
+    validatePassword(password: string): Promise<boolean>
+}
+
+export default mongoose.model("User", UserSchema);

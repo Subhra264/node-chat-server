@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction} from 'express';
-
+import GroupController from '../../controllers/group.controller';
+import authenticate from '../../middlewares/auth.middleware';
+import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
 
 Router.post('/group', async (req: Request, res: Response, next: NextFunction) => {
@@ -28,16 +30,15 @@ Router.post('/group/text-channel/messages', async (req: Request, res: Response, 
     }
 });
 
-Router.post('/user/chat', (req: Request, res: Response, next: NextFunction) => {
+Router.post('/user/chat', authenticate, (req: Request, res: Response, next: NextFunction) => {
     try {
-        // const chatData = GroupCrontoller.returnChatData(req, res, next);
+        const chatData = GroupController.returnChatData((req as AuthenticatedRequest), res, next);
 
         res.json({
             type: 'success',
-            // message: chatData
+            message: chatData
         })
     } catch(err) {
         next(err);
     }
 });
-
