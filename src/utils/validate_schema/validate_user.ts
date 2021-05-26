@@ -21,10 +21,10 @@ const userSchema = Joi.object({
         .required(),
 
     password: Joi.string()
-        .pattern(/^[a-zA-Z0-9!@#$%^&*]{3,30}$/)
+        .pattern(/^[a-zA-Z0-9!@#$%^&*]{6,20}$/)
         .required(),
 
-    image: Joi.string(),
+    profilePic: Joi.string(),
 
     about: Joi.string(),
 

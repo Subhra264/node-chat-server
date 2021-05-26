@@ -51,7 +51,7 @@ export default {
 
             if (!user) throw HttpErrors.Unauthorized('email/password not valid!');
 
-            const matchedPassword: boolean = await user.validatePassword();
+            const matchedPassword: boolean = await user.validatePassword(validatedUser.password);
             if (!matchedPassword) throw HttpErrors.Unauthorized('email/password not valid!');
 
             const accessToken: string = await signAccessToken(user.id);
@@ -63,6 +63,11 @@ export default {
             if (err.isJoi) {
                 err = HttpErrors.BadRequest(err.message);
             }
+
+            if (!err.isHttpError) {
+                err = HttpErrors.BadRequest(err.message);
+            }
+
             throw err;
         }
         

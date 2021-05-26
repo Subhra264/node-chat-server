@@ -45,8 +45,7 @@ const UserSchema = new Schema<User>({
     password: {
         type: String,
         required: true,
-        minlength: 6,
-        maxlength: 20
+        minlength: 6
     },
 
     profilePic: {
