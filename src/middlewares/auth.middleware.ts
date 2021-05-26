@@ -12,8 +12,8 @@ export default async function authenticate(req: Request, res: Response, next: Ne
     try {
         let token = req.headers['authorization'];
 
-        if (!token) throw await HttpErrors.Unauthorized();
-        if (!token.startsWith('Bearer ')) throw await HttpErrors.Unauthorized();
+        if (!token) throw HttpErrors.Unauthorized();
+        if (!token.startsWith('Bearer ')) throw HttpErrors.Unauthorized();
 
         token = token.replace('Bearer ', '');
         const payload = await verifyToken(token);

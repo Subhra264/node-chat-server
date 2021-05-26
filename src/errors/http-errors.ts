@@ -2,12 +2,12 @@
 
 class HttpError extends Error {
     public status: number;
-    public type: string;
+    public isHttpError: boolean;
 
     constructor(msg: string, status: number) {
         super(msg);
         this.status = status;
-        this.type = 'HttpError';
+        this.isHttpError = true;
     }
 }
 
@@ -23,9 +23,9 @@ export = {
      * Returns a Bad Request HttpError with status code 400
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a BadRequest Error
      */
-    BadRequest: async (msg?: string): Promise<HttpError> => {
+    BadRequest: (msg?: string): HttpError => {
         return createError(msg? msg: 'Bad Request', 400);
     },
 
@@ -33,9 +33,9 @@ export = {
      * Returns a UnAuthorized HttpError with status code 401
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a Unauthorized Error
      */
-    Unauthorized: async (msg?: string): Promise<HttpError> => {
+    Unauthorized: (msg?: string): HttpError => {
         return createError(msg? msg : 'Unauthorized request', 401);
     },
 
@@ -43,9 +43,9 @@ export = {
      * Returns a Forbidden HttpError with status code 403
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a Forbidden Error
      */
-    Forbidden: async (msg?: string): Promise<HttpError> => {
+    Forbidden: (msg?: string): HttpError => {
         return createError(msg? msg : 'Access Forbidden', 403);
     },
 
@@ -53,9 +53,9 @@ export = {
      * Returns a NotFound HttpError with status code 404
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a NotFound Error
      */
-     NotFound: async (msg?: string): Promise<HttpError> => {
+     NotFound: (msg?: string): HttpError => {
         return createError(msg? msg : 'Not Found!', 404);
     },
 
@@ -63,9 +63,9 @@ export = {
      * Returns a Not Acceptable HttpError with status code 406
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a NotAcceptable Error
      */
-    NotAcceptable: async (msg?: string): Promise<HttpError> => {
+    NotAcceptable: (msg?: string): HttpError => {
         return createError(msg? msg : 'Not Acceptable', 406);
     },
 
@@ -73,9 +73,9 @@ export = {
      * Returns a Conflict HttpError with status code 409
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a Conflict Error
      */
-    Conflict: async (msg?: string): Promise<HttpError> => {
+    Conflict: (msg?: string): HttpError => {
         return createError(msg? msg : 'Conflict', 409);
     }, 
 
@@ -83,9 +83,9 @@ export = {
      * Returns a Unprocessable Entity HttpError with status code 422
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a UnprocessableEntity Error
      */
-    UnprocessableEntity: async (msg?: string): Promise<HttpError> => {
+    UnprocessableEntity: (msg?: string): HttpError => {
         return createError(msg? msg : 'Unprocessabe Entity', 422);
     },
 
@@ -93,9 +93,9 @@ export = {
      * Returns a Internal Server HttpError with status code 500
      * 
      * @param msg 
-     * @returns Returns a Promise that resolves to a HttpError
+     * @returns Returns a ServerError
      */
-    ServerError: async (msg?: string): Promise<HttpError> => {
+    ServerError: (msg?: string): HttpError => {
         return createError(msg? msg : 'Internal Server Error', 500);
     }
 };

@@ -17,7 +17,7 @@ export default {
                 email: validatedUser.email
             });
 
-            if (doesExist) throw await HttpErrors.Conflict('User already exists!');
+            if (doesExist) throw HttpErrors.Conflict('User already exists!');
 
             const hashedPassword: string = await hashPassword(validatedUser.password);
 
@@ -30,8 +30,13 @@ export default {
         } catch(err) {
             // TODO: Create a Error Converter that converts errors to HttpErrors
             if (err.isJoi) {
-                err = await HttpErrors.BadRequest(err.message);
+                err = HttpErrors.BadRequest(err.message);
             }
+
+            if (!err.isHttpError) {
+                err = HttpErrors.BadRequest(err.message);
+            }
+
             throw err;
         }
     },
@@ -56,7 +61,7 @@ export default {
         } catch(err) {
             // Joi Errors must be converted to HttpErrors
             if (err.isJoi) {
-                err = await HttpErrors.BadRequest(err.message);
+                err = HttpErrors.BadRequest(err.message);
             }
             throw err;
         }

@@ -14,11 +14,11 @@ app.use(express.json());
 require('./routes/routes');
 
 app.use(async (req: Request, res: Response, next: NextFunction) => {
-    const error = await HttpErrors.NotFound();
+    const error = HttpErrors.NotFound();
     next(error);
 });
 
-app.use(async (err: HttpError, req: Request, res: Response) => {
+app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     return res.status(err.status).json({
         type: 'error',
         error: {

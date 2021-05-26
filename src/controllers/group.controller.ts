@@ -23,10 +23,11 @@ export default {
             // })
             
             // chatData.groups = await (await user.populate('groups', 'name profilePic _id').execPopulate()).groups;
-            chatData.groups = await user.populate({
-                path: 'groups',
-                match: { _id: { $eq: JSON.stringify(groupId) } }
-            }).execPopulate();
+            chatData.groups = await user.populate('groups', 'name profilePic')
+                .populate({
+                    path: 'groups',
+                    match: { _id: { $eq: JSON.stringify(groupId) } }
+                }).execPopulate();
             console.log(chatData.groups);
             
             return chatData;

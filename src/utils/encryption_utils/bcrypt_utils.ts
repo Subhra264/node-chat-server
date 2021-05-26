@@ -14,7 +14,7 @@ export async function hashPassword(password: string): Promise<string> {
 
         return hashedPassword;
     } catch(err) {
-        throw await HttpErrors.ServerError();
+        throw HttpErrors.ServerError();
     }
 }
 
@@ -29,6 +29,6 @@ export async function comparePassword(password: string, withPassword: string): P
     try {
         return await bcrypt.compare(password, withPassword);
     } catch(err) {
-        throw await HttpErrors.ServerError();
+        throw HttpErrors.ServerError();
     }
 }
