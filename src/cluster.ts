@@ -4,7 +4,7 @@ const numOfCPUs: number = require('os').cpus().length;
 if (cluster.isMaster) {
     console.log('Inside Master process:', process.pid);
     require('./config/env_setup');
-    require('./utils/init/initialize_db');
+    // require('./utils/init/initialize_db');
 
     for(let i = 0; i < numOfCPUs; i++) {
         cluster.fork();

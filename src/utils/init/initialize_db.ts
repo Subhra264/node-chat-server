@@ -13,7 +13,7 @@ mongoose.connection.on('connected', () => {
 
 mongoose.connection.on('error', (err: Error) => {
     console.error('Error connecting MongoDB:', err);
-    process.exit();
+    process.exit(5);
 });
 
 mongoose.connection.on('disconnected', () => {
@@ -22,7 +22,7 @@ mongoose.connection.on('disconnected', () => {
 
 process.on('SIGINT', async () => {
     if(isConnected) await mongoose.connection.close();
-    process.exit();
+    process.exit(5);
 });
 
 export {};
