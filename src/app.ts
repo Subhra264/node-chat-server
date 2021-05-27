@@ -1,5 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
-const { app, server } = require('./utils/init/initialize_app');
+import InitApp from './utils/init/initialize_app';
+const app = InitApp.app.expressApp;
+const server = InitApp.app.server;
+
 const HttpErrors = require('./errors/http-errors');
 
 import HttpError from './errors/HttpError';

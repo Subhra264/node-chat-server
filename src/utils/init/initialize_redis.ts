@@ -1,5 +1,5 @@
 import redis, { RedisClient } from 'redis';
-import { io } from './initialize_app';
+import InitApp from './initialize_app';
 import { createAdapter } from 'socket.io-redis';
 
 const redisURI = process.env.REDIS_URI;
@@ -32,6 +32,9 @@ pubClient.on('connect', () => {
 });
 
 const subClient: RedisClient = pubClient.duplicate();
+
+// Get the io instance
+const io = InitApp.app.io;
 
 io.adapter(createAdapter({
     pubClient,
