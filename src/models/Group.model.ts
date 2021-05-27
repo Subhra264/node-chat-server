@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 interface Group extends Document{
     name: string;
-    image: string;
+    image?: string;
     description?: string;
 }
 
@@ -17,11 +17,16 @@ const GroupSchema = new Schema<Group>({
 
     image: {
         type: String,
-        required: true
+        // required: true
     },
 
     description: {
         type: String  
+    },
+
+    createdAt: {
+        type: Date,
+        default: Date.now()
     },
 
     admins: [
@@ -33,21 +38,15 @@ const GroupSchema = new Schema<Group>({
 
     users: [
         {
-            name: String,
-            reference: {
-                type: Schema.Types.ObjectId,
-                ref: 'User'
-            }
+            type: Schema.Types.ObjectId,
+            ref: 'User'
         }
     ],
 
     textChannels: [
         {
-            name: String,
-            reference: {
-                type: Schema.Types.ObjectId,
-                ref: 'TextChannel'
-            }
+            type: Schema.Types.ObjectId,
+            ref: 'TextChannel'
         }
     ],
 

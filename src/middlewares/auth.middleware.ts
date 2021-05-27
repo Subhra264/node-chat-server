@@ -23,9 +23,12 @@ export default async function authenticate(req: Request, res: Response, next: Ne
         if (!user) throw HttpErrors.Unauthorized();
 
         (req as AuthenticatedRequest).user = user;
-        next(req);
+        next();
 
     } catch(err) {
+        if (!err.isHttpError) {
+            err = HttpErrors.ServerError();
+        }
         next(err);
     }
 }

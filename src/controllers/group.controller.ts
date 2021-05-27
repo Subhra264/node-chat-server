@@ -1,13 +1,58 @@
 import { NextFunction, Response } from "express";
-// import { Document } from "mongoose";
-// import Group from "../models/Group.model";
+import mongoose, { Document } from "mongoose";
+import HttpErrors from "../errors/http-errors";
+import TextChannel from "../models/channels/TextChannel.model";
+import Group from "../models/Group.model";
 import AuthenticatedRequest, { AuthenticatedUser } from "../utils/interfaces/AuthenticatedRequest";
+import groupSchema from "../utils/validate_schema/validate_group";
 
 // interface ChatData {
 //     groups
 // }
 
 export default {
+    createGroup: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            // TODO: Give validatedGroup a type
+            const validatedGroup = await groupSchema.validateAsync(req.body);
+
+            const parentGroupId = new mongoose.Types.ObjectId();
+            // TODO: Give welcomeChannel a TextChannelDocument type
+            const welcomeChannel: Document = new TextChannel({
+                name: 'welcome',
+                parentGroup: parentGroupId
+            });
+
+            const welcomeDoc = await welcomeChannel.save();
+
+            const newGroup = await (new Group({
+                _id: parentGroupId,
+                ...validatedGroup,
+                users: [
+                    req.user._id
+                ],
+                textChannels: [
+                    welcomeDoc._id
+                ]
+            }) as Document).save();
+
+            req.user.groups?.push(newGroup._id);
+            await req.user.save();
+
+        } catch(err) {
+            console.log('Error creating group', err);
+            if (err.isJoi) {
+                err = HttpErrors.BadRequest('Please fill all the fields correctly!');
+            }
+
+            if (!err.isHttpError) {
+                err = HttpErrors.ServerError();
+            }
+
+            throw err;
+        }
+    },
+
     returnChatData: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
 
@@ -34,7 +79,7 @@ export default {
             // Group.findById(groupId)
 
         } catch(err) {
-            next(err);
+            throw err;
         }
     }
 }

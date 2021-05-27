@@ -4,7 +4,7 @@ import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
 
-Router.post('/group', async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         //const groupData = await GroupController.returnGroupData(req, res, next);
 
@@ -12,6 +12,20 @@ Router.post('/group', async (req: Request, res: Response, next: NextFunction) =>
         //     type: 'success',
         //     message: groupData
         // });
+    } catch(err) {
+        next(err);
+    }
+});
+
+// POST request to create a new Group
+Router.post('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await GroupController.createGroup((req as AuthenticatedRequest), res,  next);
+
+        res.json({
+            type: 'success',
+            message: 'Group created successfully!'
+        })
     } catch(err) {
         next(err);
     }
@@ -42,3 +56,5 @@ Router.post('/user/chat', authenticate, (req: Request, res: Response, next: Next
         next(err);
     }
 });
+
+export = Router;

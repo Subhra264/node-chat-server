@@ -21,11 +21,8 @@ const TextChannelSchema = new Schema({
                 type: String || Buffer
             },
             sender: {
-                name: String,
-                reference: {
-                    type: Schema.Types.ObjectId,
-                    ref: 'User'
-                }
+                type: Schema.Types.ObjectId,
+                ref: 'User'
             }
         }
     ]

@@ -41,7 +41,10 @@ export async function verifyToken(token: string): Promise<object> {
         }
 
         jwt.verify(token, process.env.JWT_ACCESS_KEY, (err, payload) => {
-            if (err || !payload) return reject(HttpErrors.Unauthorized());
+            if (err || !payload) {
+                console.log('Error', err);
+                return reject(HttpErrors.Unauthorized());
+            }
             resolve(payload); 
         });
     });
