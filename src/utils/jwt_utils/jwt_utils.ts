@@ -33,7 +33,7 @@ export async function signAccessToken(userId: string): Promise<string> {
  * @param token 
  * @returns Promise that resolves to the payload
  */
-export async function verifyToken(token: string): Promise<object> {
+export async function verifyToken(token: string): Promise<Record<string, unknown>> {
 
     return new Promise((resolve, reject) => {
         if (!process.env.JWT_ACCESS_KEY) {
@@ -45,7 +45,7 @@ export async function verifyToken(token: string): Promise<object> {
                 console.log('Error', err);
                 return reject(HttpErrors.Unauthorized());
             }
-            resolve(payload); 
+            resolve(payload as Record<string, unknown>); 
         });
     });
 }

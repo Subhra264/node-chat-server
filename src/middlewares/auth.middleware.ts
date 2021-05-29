@@ -18,7 +18,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
         token = token.replace('Bearer ', '');
         const payload = await verifyToken(token);
 
-        const user = await User.findById((payload as Payload).userId).exec();
+        const user = await User.findById((payload as unknown as Payload).userId).exec();
 
         if (!user) throw HttpErrors.Unauthorized();
 
