@@ -1,5 +1,13 @@
+import { Router } from 'express';
 import InitApp from '../utils/init/initialize_app';
 const app = InitApp.app.expressApp;
 
-app.use('/api/auth', require('./api/auth.route'));
-app.use('/api', require('./api/group.route'));
+const routes: [string, Router][] = [
+    ['/api/auth', require('./api/auth.route')],
+    ['/api', require('./api/group.route')],
+    ['/api', require('./api/text_channel.route')]
+];
+
+routes.forEach((route) => {
+    app.use(route[0], route[1]);
+});

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import HttpErrors from "../errors/http-errors";
-import UserModel from "../models/User.model";
+import User from "../models/User.model";
 import AuthenticatedRequest from "../utils/interfaces/AuthenticatedRequest";
 import { verifyToken } from "../utils/jwt_utils/jwt_utils";
 
@@ -18,7 +18,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
         token = token.replace('Bearer ', '');
         const payload = await verifyToken(token);
 
-        const user = await UserModel.findById((payload as Payload).userId).exec();
+        const user = await User.findById((payload as Payload).userId).exec();
 
         if (!user) throw HttpErrors.Unauthorized();
 
