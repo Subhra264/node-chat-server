@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const TextChannelSchema = new Schema({
@@ -15,7 +15,7 @@ const TextChannelSchema = new Schema({
         required: true
     },
 
-    textMessages: [
+    messages: [
         {
             message: {
                 type: String || Buffer
@@ -28,4 +28,4 @@ const TextChannelSchema = new Schema({
     ]
 });
 
-export = mongoose.model('TextChannel', TextChannelSchema);
+export default mongoose.model('TextChannel', TextChannelSchema);

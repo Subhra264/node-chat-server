@@ -53,32 +53,54 @@ export default {
         }
     },
 
-    returnChatData: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    // TODO: Rethink over the data fetching implementation
+    returnDashBoardData: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
 
             // TODO: Give chatData a type
-            const chatData: any = {};
+            const dashBoardData: any = {};
             const user: AuthenticatedUser = req.user;
             const { groupId, channelId } = req.body;
+            
+            dashBoardData.groups = (await user.populate('groups', 'name image').execPopulate())?.groups;
+            console.log(dashBoardData.groups);
 
-            // user.groups?.forEach((groupId_, index) => {
-            //     if (JSON.stringify(groupId_) === JSON.stringify(groupId)) {
-            //         (user.groups)![index].populate('g')
-            //     }
-            // })
-            
-            // chatData.groups = await (await user.populate('groups', 'name profilePic _id').execPopulate()).groups;
-            chatData.groups = await user.populate('groups', 'name profilePic')
-                .populate({
-                    path: 'groups',
-                    match: { _id: { $eq: JSON.stringify(groupId) } }
-                }).execPopulate();
-            console.log(chatData.groups);
-            
-            return chatData;
-            // Group.findById(groupId)
+            let isGroupIdValid = false;
+            dashBoardData.groups?.forEach((group) => {
+                if (JSON.stringify(group._id) === `"${groupId}"`) {
+                    isGroupIdValid = true;
+                }
+            });
+
+            if (!isGroupIdValid) throw HttpErrors.Forbidden();
+
+            // TODO: Give group a proper type
+            const group = await Group.findById(groupId)
+                .populate('textChannels', 'name')
+                .populate('users', 'userName profilePic')
+                .exec();
+
+            // TODO: Give textChannel a proper type
+            const textChannel = await TextChannel.findOne({
+                _id: channelId,
+                parentGroup: groupId
+            }).exec();
+
+            if (!textChannel) throw HttpErrors.Forbidden();
+
+            dashBoardData.textChannels = group.textChannels;
+            dashBoardData.voiceChannels = group.voiceChannels;
+            // TODO: Set the type for textChannel in the below line
+            dashBoardData.messages = (textChannel as any).messages;
+            dashBoardData.users = group.users;
+
+            return dashBoardData;
 
         } catch(err) {
+            if (!err.isHttpError) {
+                err = HttpErrors.ServerError();
+            }
+
             throw err;
         }
     }
