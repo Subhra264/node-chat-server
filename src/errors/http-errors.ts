@@ -12,9 +12,7 @@ class HttpError extends Error {
 }
 
 const createError = (msg: string, errCode: number): HttpError => {
-    const error = new HttpError(msg, errCode);
-
-    return error;
+    return new HttpError(msg, errCode);
 }
 
 export = {
@@ -25,8 +23,8 @@ export = {
      * @param msg 
      * @returns Returns a BadRequest Error
      */
-    BadRequest: (msg?: string): HttpError => {
-        return createError(msg? msg: 'Bad Request', 400);
+    BadRequest: (msg: string = 'Bad Request'): HttpError => {
+        return createError(msg, 400);
     },
 
     /**
@@ -35,8 +33,8 @@ export = {
      * @param msg 
      * @returns Returns a Unauthorized Error
      */
-    Unauthorized: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Unauthorized request', 401);
+    Unauthorized: (msg: string = 'Unauthorized request'): HttpError => {
+        return createError(msg, 401);
     },
 
     /**
@@ -45,8 +43,8 @@ export = {
      * @param msg 
      * @returns Returns a Forbidden Error
      */
-    Forbidden: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Access Forbidden', 403);
+    Forbidden: (msg: string = 'Access Forbidden'): HttpError => {
+        return createError(msg, 403);
     },
 
     /**
@@ -55,8 +53,8 @@ export = {
      * @param msg 
      * @returns Returns a NotFound Error
      */
-     NotFound: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Not Found!', 404);
+     NotFound: (msg: string = 'Not Found!'): HttpError => {
+        return createError(msg, 404);
     },
 
     /**
@@ -65,8 +63,8 @@ export = {
      * @param msg 
      * @returns Returns a NotAcceptable Error
      */
-    NotAcceptable: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Not Acceptable', 406);
+    NotAcceptable: (msg: string = 'Not Acceptable'): HttpError => {
+        return createError(msg, 406);
     },
 
     /**
@@ -75,8 +73,8 @@ export = {
      * @param msg 
      * @returns Returns a Conflict Error
      */
-    Conflict: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Conflict', 409);
+    Conflict: (msg: string = 'Conflict'): HttpError => {
+        return createError(msg, 409);
     }, 
 
     /**
@@ -85,8 +83,8 @@ export = {
      * @param msg 
      * @returns Returns a UnprocessableEntity Error
      */
-    UnprocessableEntity: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Unprocessabe Entity', 422);
+    UnprocessableEntity: (msg: string = 'Unprocessable Entity'): HttpError => {
+        return createError(msg, 422);
     },
 
     /**
@@ -95,7 +93,7 @@ export = {
      * @param msg 
      * @returns Returns a ServerError
      */
-    ServerError: (msg?: string): HttpError => {
-        return createError(msg? msg : 'Internal Server Error', 500);
+    ServerError: (msg: string = 'Internal Server Error'): HttpError => {
+        return createError(msg, 500);
     }
 };
