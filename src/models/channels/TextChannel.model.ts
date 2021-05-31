@@ -1,7 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema as SchemaType } from 'mongoose';
 const Schema = mongoose.Schema;
 
-const TextChannelSchema = new Schema({
+export interface Message {
+    message: string;
+    sender: SchemaType.Types.ObjectId;
+}
+
+export interface TextChannelSchema {
+    name: string;
+    parentGroup: SchemaType.Types.ObjectId;
+    messages: [Message],
+    description?: string;
+}
+
+export interface TextChannelDocument extends TextChannelSchema, Document {}
+
+const TextChannelSchema = new Schema<TextChannelDocument>({
     name: {
         type: String,
         required: true,
@@ -15,10 +29,14 @@ const TextChannelSchema = new Schema({
         required: true
     },
 
+    description: {
+        type: String
+    },
+
     messages: [
         {
             message: {
-                type: String || Buffer
+                type: String
             },
             sender: {
                 type: Schema.Types.ObjectId,

@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import { TextChannelSchema } from '../../models/channels/TextChannel.model';
 
-const TextChannelSchema = Joi.object({
+const TextChannel_Joi = Joi.object<TextChannelSchema>({
     name: Joi.string()
         .trim()
         .min(3)
@@ -13,4 +14,4 @@ const TextChannelSchema = Joi.object({
         .required()
 });
 
-export default TextChannelSchema;
+export default TextChannel_Joi;

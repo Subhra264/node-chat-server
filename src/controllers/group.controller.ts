@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import mongoose, { Document } from "mongoose";
 import HttpErrors from "../errors/http-errors";
-import TextChannel from "../models/channels/TextChannel.model";
+import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel.model";
 import Group from "../models/Group.model";
 import AuthenticatedRequest, { AuthenticatedUser } from "../utils/interfaces/AuthenticatedRequest";
 import groupSchema from "../utils/validate_schema/validate_group";
@@ -17,13 +17,12 @@ export default {
             const validatedGroup = await groupSchema.validateAsync(req.body);
 
             const parentGroupId = new mongoose.Types.ObjectId();
-            // TODO: Give welcomeChannel a TextChannelDocument type
-            const welcomeChannel: Document = new TextChannel({
+            const welcomeChannel: TextChannelDocument = new TextChannel({
                 name: 'welcome',
                 parentGroup: parentGroupId
             });
 
-            const welcomeDoc = await welcomeChannel.save();
+            const welcomeDoc: TextChannelDocument = await welcomeChannel.save();
 
             const newGroup = await (new Group({
                 _id: parentGroupId,
@@ -80,8 +79,7 @@ export default {
                 .populate('users', 'userName profilePic')
                 .exec();
 
-            // TODO: Give textChannel a proper type
-            const textChannel = await TextChannel.findOne({
+            const textChannel: TextChannelDocument = await TextChannel.findOne({
                 _id: channelId,
                 parentGroup: groupId
             }).exec();
@@ -90,8 +88,7 @@ export default {
 
             dashBoardData.textChannels = group.textChannels;
             dashBoardData.voiceChannels = group.voiceChannels;
-            // TODO: Set the type for textChannel in the below line
-            dashBoardData.messages = (textChannel as any).messages;
+            dashBoardData.messages = (textChannel as TextChannelDocument).messages;
             dashBoardData.users = group.users;
 
             return dashBoardData;

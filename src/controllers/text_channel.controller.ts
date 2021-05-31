@@ -1,15 +1,14 @@
 import { NextFunction, Response } from "express";
 import AuthenticatedRequest from "../utils/interfaces/AuthenticatedRequest";
-import TextChannelSchema from "../utils/validate_schema/validate_text_channel";
+import TextChannel_Joi from "../utils/validate_schema/validate_text_channel";
 import HttpErrors from '../errors/http-errors';
 import Group from "../models/Group.model";
-import TextChannel from "../models/channels/TextChannel.model";
-import { Document } from "mongoose";
+import TextChannel, { TextChannelDocument, TextChannelSchema } from "../models/channels/TextChannel.model";
 
 export default {
     createTextChannel: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const validatedTextChannel = await TextChannelSchema.validateAsync(req.body);
+            const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
             const authenticatedUser = req.user;
 
             // Check if the user is part of the group
@@ -22,8 +21,7 @@ export default {
 
             if (!isAllowed) throw HttpErrors.Forbidden();
 
-            // TODO: Define an interface for TextChannel model and use that instead of Document
-            const newTextChannel = await (new TextChannel(validatedTextChannel) as Document).save();
+            const newTextChannel: TextChannelDocument = await (new TextChannel(validatedTextChannel) as TextChannelDocument).save();
 
             await Group.findByIdAndUpdate(validatedTextChannel.parentGroup, {
                 $push: { textChannels: newTextChannel._id }
@@ -54,13 +52,13 @@ export default {
             });
 
             if (!isAllowed) throw HttpErrors.Forbidden();
-            const textChannel = await TextChannel.findOne({
+            const textChannel: TextChannelDocument = await TextChannel.findOne({
                 _id: textChannelId,
                 parentGroup: groupId
             }).exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();
-            return (textChannel as any).messages;
+            return textChannel.messages;
 
         } catch(err) {
             if (!err.isHttpError) {
