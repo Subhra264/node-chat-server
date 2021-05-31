@@ -4,7 +4,7 @@ import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
 
-Router.post('/textchannel', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.post('/text-channel', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         await TextChannelController.createTextChannel((req as AuthenticatedRequest), res, next);
         
@@ -16,5 +16,19 @@ Router.post('/textchannel', authenticate, async (req: Request, res: Response, ne
         next(err);
     }
 });
+
+Router.get('/text-channel/messages', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const messages = await TextChannelController.getMessages((req as AuthenticatedRequest));
+
+        res.json({
+            type: 'success',
+            message: messages
+        })
+    } catch(err) {
+        next(err);
+    }
+});
+
 
 export = Router;

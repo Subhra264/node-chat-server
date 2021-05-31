@@ -40,5 +40,34 @@ export default {
 
             throw err;
         }
+    },
+
+    getMessages: async (req: AuthenticatedRequest) => {
+        try {
+            const { groupId, textChannelId } = req.query;
+
+            let isAllowed = false;
+            req.user.groups?.forEach((groupId_) => {
+                if (JSON.stringify(groupId_) === `"${groupId}"`) {
+                    isAllowed = true;
+                }
+            });
+
+            if (!isAllowed) throw HttpErrors.Forbidden();
+            const textChannel = await TextChannel.findOne({
+                _id: textChannelId,
+                parentGroup: groupId
+            }).exec();
+
+            if (!textChannel) throw HttpErrors.Forbidden();
+            return (textChannel as any).messages;
+
+        } catch(err) {
+            if (!err.isHttpError) {
+                err = HttpErrors.ServerError();
+            }
+
+            throw err;
+        }
     }
 }

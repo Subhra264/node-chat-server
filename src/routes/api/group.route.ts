@@ -31,19 +31,6 @@ Router.post('/group', authenticate, async (req: Request, res: Response, next: Ne
     }
 });
 
-Router.post('/group/text-channel/messages', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        // const messages = GroupController.returnMessages(req, res, next);
-        
-        res.json({
-            type: 'success',
-            // message: messages
-        })
-    } catch(err) {
-        next(err);
-    }
-});
-
 Router.post('/user/dashboard', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const dashBoardData = await GroupController.returnDashBoardData((req as AuthenticatedRequest), res, next);
