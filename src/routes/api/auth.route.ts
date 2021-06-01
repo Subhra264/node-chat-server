@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import AuthController from '../../controllers/auth.controller';
+import HttpError from '../../errors/HttpError';
 const Router = express.Router();
 
 Router.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
@@ -14,7 +15,7 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
             // message: accessToken
         });
     } catch(err) {
-        return next(err);
+        next(err as HttpError);
     }
 
 });
@@ -29,7 +30,7 @@ Router.post('/signin', async (req, res, next) => {
             message: accessToken
         });
     } catch(err) {
-        return next(err);
+        next(err as HttpError);
     }
 
 });

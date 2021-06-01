@@ -4,6 +4,7 @@ import UserSchema_Joi from "../utils/validate_schema/validate_user"
 import { NextFunction, Request, Response } from 'express';
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 import { signAccessToken } from '../utils/jwt_utils/jwt_utils';
+import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 
 export default {
     createAccount: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -27,16 +28,7 @@ export default {
             await user.save();
 
         } catch(err) {
-            // TODO: Create a Error Converter that converts errors to HttpErrors
-            if (err.isJoi) {
-                err = HttpErrors.BadRequest(err.message);
-            }
-
-            if (!err.isHttpError) {
-                err = HttpErrors.BadRequest(err.message);
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     },
 
@@ -58,16 +50,7 @@ export default {
             return accessToken;
 
         } catch(err) {
-            // Joi Errors must be converted to HttpErrors
-            if (err.isJoi) {
-                err = HttpErrors.BadRequest(err.message);
-            }
-
-            if (!err.isHttpError) {
-                err = HttpErrors.BadRequest(err.message);
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
         
     }

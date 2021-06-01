@@ -4,5 +4,5 @@
 
 export default interface HttpError extends Error {
     status: number;
-    type: string;
+    isHttpError: boolean;
 }

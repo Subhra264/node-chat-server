@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import HttpErrors from "../errors/http-errors";
+import HttpError from "../errors/HttpError";
 import User, { UserDocument } from "../models/User.model";
 import AuthenticatedRequest from "../utils/interfaces/AuthenticatedRequest";
 import { verifyToken } from "../utils/jwt_utils/jwt_utils";
@@ -26,9 +28,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
         next();
 
     } catch(err) {
-        if (!err.isHttpError) {
-            err = HttpErrors.ServerError();
-        }
-        next(err);
+        err = convertToHttpErrorFrom(err);
+        next(err as HttpError);
     }
 }

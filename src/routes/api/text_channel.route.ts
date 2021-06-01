@@ -1,5 +1,6 @@
 import express, { Request, NextFunction, Response } from 'express';
 import TextChannelController from '../../controllers/text_channel.controller';
+import HttpError from '../../errors/HttpError';
 import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
@@ -13,7 +14,7 @@ Router.get('/messages', authenticate, async (req: Request, res: Response, next: 
             message: messages
         })
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 
@@ -26,7 +27,7 @@ Router.post('/', authenticate, async (req: Request, res: Response, next: NextFun
             message: 'text-channel created successfully!'
         })
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 
@@ -40,7 +41,7 @@ Router.put('/message', authenticate, async (req: Request, res: Response, next: N
         });
         
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 

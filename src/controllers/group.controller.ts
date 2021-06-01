@@ -1,5 +1,6 @@
 import { NextFunction, Response } from "express";
 import mongoose from "mongoose";
+import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import HttpErrors from "../errors/http-errors";
 import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel.model";
 import Group, { GroupDocument, GroupSchema } from "../models/Group.model";
@@ -38,15 +39,7 @@ export default {
             await req.user.save();
 
         } catch(err) {
-            if (err.isJoi) {
-                err = HttpErrors.BadRequest('Please fill all the fields correctly!');
-            }
-
-            if (!err.isHttpError) {
-                err = HttpErrors.ServerError();
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     },
 
@@ -90,11 +83,7 @@ export default {
             return dashBoardData;
 
         } catch(err) {
-            if (!err.isHttpError) {
-                err = HttpErrors.ServerError();
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     }
 }

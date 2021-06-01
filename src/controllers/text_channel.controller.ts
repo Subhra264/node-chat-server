@@ -5,6 +5,7 @@ import HttpErrors from '../errors/http-errors';
 import Group from "../models/Group.model";
 import TextChannel, { Message, TextChannelDocument, TextChannelSchema } from "../models/channels/TextChannel.model";
 import MessageReqSchema_Joi from "../utils/validate_schema/validate_message";
+import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 
 export default {
     createTextChannel: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -29,15 +30,7 @@ export default {
                 }).exec();
 
         } catch(err) {
-            if (err.isJoi) {
-                err = HttpErrors.BadRequest();
-            }
-
-            if (!err.isHttpError) {
-                err = HttpErrors.ServerError();
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     },
 
@@ -64,11 +57,7 @@ export default {
             return textChannel.messages;
 
         } catch(err) {
-            if (!err.isHttpError) {
-                err = HttpErrors.ServerError();
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     },
 
@@ -93,13 +82,7 @@ export default {
             await textChannel.save();
             
         } catch(err) {
-            if (err.isJoi) {
-                err = HttpErrors.BadRequest();
-            } else if (!err.isHttpError) {
-                err = HttpErrors.ServerError(err.message);
-            }
-
-            throw err;
+            throw convertToHttpErrorFrom(err);
         }
     }
 }

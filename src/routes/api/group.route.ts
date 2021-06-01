@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction} from 'express';
 import GroupController from '../../controllers/group.controller';
+import HttpError from '../../errors/HttpError';
 import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
@@ -13,7 +14,7 @@ Router.get('/group', authenticate, async (req: Request, res: Response, next: Nex
         //     message: groupData
         // });
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 
@@ -27,7 +28,7 @@ Router.post('/group', authenticate, async (req: Request, res: Response, next: Ne
             message: 'Group created successfully!'
         })
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 
@@ -40,7 +41,7 @@ Router.post('/user/dashboard', authenticate, async (req: Request, res: Response,
             message: dashBoardData
         })
     } catch(err) {
-        next(err);
+        next(err as HttpError);
     }
 });
 
