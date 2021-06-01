@@ -1,19 +1,20 @@
 import { NextFunction, Response } from "express";
-import AuthenticatedRequest from "../utils/interfaces/AuthenticatedRequest";
+import AuthenticatedRequest, { AuthenticatedUser } from "../utils/interfaces/AuthenticatedRequest";
 import TextChannel_Joi from "../utils/validate_schema/validate_text_channel";
 import HttpErrors from '../errors/http-errors';
 import Group from "../models/Group.model";
-import TextChannel, { TextChannelDocument, TextChannelSchema } from "../models/channels/TextChannel.model";
+import TextChannel, { Message, TextChannelDocument, TextChannelSchema } from "../models/channels/TextChannel.model";
+import MessageReqSchema_Joi from "../utils/validate_schema/validate_message";
 
 export default {
     createTextChannel: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
-            const authenticatedUser = req.user;
+            const user: AuthenticatedUser = req.user;
 
             // Check if the user is part of the group
             let isAllowed = false;
-            authenticatedUser.groups.forEach(groupId => {
+            user.groups.forEach(groupId => {
                 if (JSON.stringify(groupId) === `"${validatedTextChannel.parentGroup}"`) {
                     isAllowed = true;
                 }
@@ -24,8 +25,8 @@ export default {
             const newTextChannel: TextChannelDocument = await (new TextChannel(validatedTextChannel) as TextChannelDocument).save();
 
             await Group.findByIdAndUpdate(validatedTextChannel.parentGroup, {
-                $push: { textChannels: newTextChannel._id }
-            }).exec();
+                    $push: { textChannels: newTextChannel._id }
+                }).exec();
 
         } catch(err) {
             if (err.isJoi) {
@@ -40,7 +41,7 @@ export default {
         }
     },
 
-    getMessages: async (req: AuthenticatedRequest) => {
+    getMessages: async (req: AuthenticatedRequest): Promise<Message[]> => {
         try {
             const { groupId, textChannelId } = req.query;
 
@@ -53,9 +54,11 @@ export default {
 
             if (!isAllowed) throw HttpErrors.Forbidden();
             const textChannel: TextChannelDocument = await TextChannel.findOne({
-                _id: textChannelId,
-                parentGroup: groupId
-            }).exec();
+                    _id: textChannelId,
+                    parentGroup: groupId
+                })
+                .populate('messages.sender', 'userName profilePic')
+                .exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();
             return textChannel.messages;
@@ -63,6 +66,37 @@ export default {
         } catch(err) {
             if (!err.isHttpError) {
                 err = HttpErrors.ServerError();
+            }
+
+            throw err;
+        }
+    },
+
+    // Add a given message to the database
+    saveMessage: async (req: AuthenticatedRequest): Promise<void> => {
+        try {
+            const user: AuthenticatedUser = req.user;
+            const { channelId, message, groupId } = await MessageReqSchema_Joi.validateAsync(req.body);
+
+            const textChannel: TextChannelDocument = await TextChannel.findOne({
+                    _id: channelId, 
+                    parentGroup: groupId
+                }).exec();
+            
+            if (!textChannel) throw HttpErrors.Forbidden();
+            
+            textChannel.messages.push({
+                message,
+                sender: user._id
+            });
+
+            await textChannel.save();
+            
+        } catch(err) {
+            if (err.isJoi) {
+                err = HttpErrors.BadRequest();
+            } else if (!err.isHttpError) {
+                err = HttpErrors.ServerError(err.message);
             }
 
             throw err;
