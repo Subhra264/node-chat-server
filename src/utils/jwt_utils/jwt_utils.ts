@@ -42,7 +42,6 @@ export async function verifyToken(token: string): Promise<Record<string, unknown
 
         jwt.verify(token, process.env.JWT_ACCESS_KEY, (err, payload) => {
             if (err || !payload) {
-                console.log('Error', err);
                 return reject(HttpErrors.Unauthorized());
             }
             resolve(payload as Record<string, unknown>); 

@@ -13,7 +13,7 @@ export default {
 
             // Check if the user is part of the group
             let isAllowed = false;
-            authenticatedUser.groups?.forEach(groupId => {
+            authenticatedUser.groups.forEach(groupId => {
                 if (JSON.stringify(groupId) === `"${validatedTextChannel.parentGroup}"`) {
                     isAllowed = true;
                 }
@@ -45,7 +45,7 @@ export default {
             const { groupId, textChannelId } = req.query;
 
             let isAllowed = false;
-            req.user.groups?.forEach((groupId_) => {
+            req.user.groups.forEach((groupId_) => {
                 if (JSON.stringify(groupId_) === `"${groupId}"`) {
                     isAllowed = true;
                 }

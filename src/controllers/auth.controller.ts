@@ -1,8 +1,7 @@
 import HttpErrors from "../errors/http-errors";
-import User from "../models/User.model";
-import userSchema from "../utils/validate_schema/validate_user"
+import User, { UserDocument, UserSchema } from "../models/User.model";
+import UserSchema_Joi from "../utils/validate_schema/validate_user"
 import { NextFunction, Request, Response } from 'express';
-import { Document } from "mongoose";
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 import { signAccessToken } from '../utils/jwt_utils/jwt_utils';
 
@@ -11,17 +10,17 @@ export default {
 
         try {
             // Validate the req.body
-            const validatedUser = await userSchema.validateAsync(req.body);
+            const validatedUser: UserSchema = await UserSchema_Joi.validateAsync(req.body);
 
-            const doesExist = await User.findOne({
+            const existingUser: UserDocument = await User.findOne({
                 email: validatedUser.email
-            });
+            }).exec();
 
-            if (doesExist) throw HttpErrors.Conflict('User already exists!');
+            if (existingUser) throw HttpErrors.Conflict('User already exists!');
 
             const hashedPassword: string = await hashPassword(validatedUser.password);
 
-            const user: Document = new User({
+            const user: UserDocument = new User({
                 ...validatedUser,
                 password: hashedPassword
             });
@@ -44,10 +43,10 @@ export default {
     authenticateUser: async (req: Request, res: Response, next: NextFunction): Promise<string> => {
 
         try {
-            const validatedUser = await userSchema.validateAsync(req.body);
-            const user = await User.findOne({
+            const validatedUser: UserSchema = await UserSchema_Joi.validateAsync(req.body);
+            const user: UserDocument = await User.findOne({
                 email: validatedUser.email
-            });
+            }).exec();
 
             if (!user) throw HttpErrors.Unauthorized('email/password not valid!');
 

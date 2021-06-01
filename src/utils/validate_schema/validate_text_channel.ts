@@ -11,7 +11,12 @@ const TextChannel_Joi = Joi.object<TextChannelSchema>({
     parentGroup: Joi.string()
         .hex()
         .length(24)
-        .required()
+        .required(),
+
+    description: Joi.string()
+        .trim()
+        .min(3)
+        .max(100)
 });
 
 export default TextChannel_Joi;

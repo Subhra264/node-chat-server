@@ -1,6 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
+import { UserSchema } from '../../models/User.model';
 
-const userSchema = Joi.object({
+const UserSchema_Joi = Joi.object<UserSchema>({
     name: Joi.string()
         .trim()
         .min(3)
@@ -30,4 +31,4 @@ const userSchema = Joi.object({
 
 });
 
-export = userSchema;
+export default UserSchema_Joi;

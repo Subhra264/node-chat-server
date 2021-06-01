@@ -9,11 +9,12 @@ export interface Message {
 export interface TextChannelSchema {
     name: string;
     parentGroup: SchemaType.Types.ObjectId;
-    messages: [Message],
     description?: string;
 }
 
-export interface TextChannelDocument extends TextChannelSchema, Document {}
+export interface TextChannelDocument extends TextChannelSchema, Document {
+    messages: [ Message ];
+}
 
 const TextChannelSchema = new Schema<TextChannelDocument>({
     name: {

@@ -1,13 +1,24 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema as SchemaType } from "mongoose";
 const Schema = mongoose.Schema;
 
-interface Group extends Document{
+export interface GroupSchema {
     name: string;
     image?: string;
     description?: string;
 }
 
-const GroupSchema = new Schema<Group>({
+export interface GroupDocument extends GroupSchema, Document {
+    createdAt: Date;
+    admins: [ SchemaType.Types.ObjectId ];
+    users: [ SchemaType.Types.ObjectId ];
+    textChannels: [ SchemaType.Types.ObjectId ];
+    voiceChannels: [{
+        name: string;
+        reference: SchemaType.Types.ObjectId;
+    }];
+}
+
+const GroupSchema = new Schema<GroupDocument>({
     name: {
         type: String,
         required: true,
@@ -61,4 +72,4 @@ const GroupSchema = new Schema<Group>({
     ]
 });
 
-export = mongoose.model('Group', GroupSchema);
+export default mongoose.model('Group', GroupSchema);

@@ -1,6 +1,7 @@
 import Joi from 'joi';
+import { GroupSchema } from '../../models/Group.model';
 
-const groupSchema = Joi.object({
+const groupSchema = Joi.object<GroupSchema>({
     name: Joi.string()
         .trim()
         .min(3)
@@ -9,7 +10,7 @@ const groupSchema = Joi.object({
 
     description: Joi.string()
         .trim()
-        .min(10),
+        .min(3),
 
     image: Joi.string()
         .trim()
