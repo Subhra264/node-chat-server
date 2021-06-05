@@ -56,11 +56,11 @@ export default {
 
             let isGroupIdValid = false;
             dashBoardData.groups?.forEach((group) => {
-                if (JSON.stringify(group._id) === `"${groupId}"`) {
+                if (group.id === groupId) {
                     isGroupIdValid = true;
                 }
             });
-
+            
             if (!isGroupIdValid) throw HttpErrors.Forbidden();
 
             const group: GroupDocument = await Group.findById(groupId)
@@ -69,9 +69,11 @@ export default {
                 .exec();
 
             const textChannel: TextChannelDocument = await TextChannel.findOne({
-                _id: channelId,
-                parentGroup: groupId
-            }).exec();
+                    _id: channelId,
+                    parentGroup: groupId
+                })
+                .populate('messages.sender', 'userName profilePic')
+                .exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();
 

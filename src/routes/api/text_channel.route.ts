@@ -37,7 +37,7 @@ Router.put('/message', authenticate, async (req: Request, res: Response, next: N
 
         res.json({
             type: 'success',
-            message: 'Message saved successfully1'
+            message: 'Message saved successfully!'
         });
         
     } catch(err) {
