@@ -16,29 +16,50 @@ if (redisClient.length !== 2) {
     process.exit(5);
 }
 
-const pubClient: RedisClient = redis.createClient({
-    host: redisClient[0],
-    port: +redisClient[1],
-    auth_pass: redisPwd
-});
+// Singleton pattern
+class InitRedis {
+    public pubClient: RedisClient | null = null;
+    public subClient: RedisClient | null = null;
+    private static redisClient_: InitRedis;
+    
+    // Don't let anyone instantiate it
+    private constructor () {
+        // The redis publisher client
+        this.pubClient = redis.createClient({
+            host: redisClient[0],
+            port: +redisClient[1],
+            auth_pass: redisPwd
+        });
+        
+        this.pubClient.on('error', (err: Error) => {
+            console.error('Error connecting redis server:', err);
+            process.exit(5);
+        });
+        
+        this.pubClient.on('connect', () => {
+            console.log('Connected to redis server...');
+        });
+        
+        // Redis subscriber client
+        this.subClient = this.pubClient.duplicate();
 
-pubClient.on('error', (err: Error) => {
-    console.error('Error connecting redis server:', err);
-    process.exit(5);
-});
+        // Create an adapter for the socket.io instance
+        InitApp.app.io.adapter(createAdapter({
+            pubClient: this.pubClient,
+            subClient: this.subClient
+        }));
+    }
 
-pubClient.on('connect', () => {
-    console.log('Connected to redis server...');
-});
+    // Initialize redis
+    public static init() {
+        if (!this.redisClient_) this.redisClient_ = new InitRedis();
+    }
 
-const subClient: RedisClient = pubClient.duplicate();
+    // Get the Redis client
+    public static get redisClient() {
+        this.init();
+        return this.redisClient_;
+    }
+}
 
-// Get the io instance
-const io = InitApp.app.io;
-
-io.adapter(createAdapter({
-    pubClient,
-    subClient
-}));
-
-export {};
+export = InitRedis;
