@@ -18,8 +18,8 @@ if (redisClient.length !== 2) {
 
 // Singleton pattern
 class InitRedis {
-    public pubClient: RedisClient | null = null;
-    public subClient: RedisClient | null = null;
+    public pubClient: RedisClient;
+    public subClient: RedisClient;
     private static redisClient_: InitRedis;
     
     // Don't let anyone instantiate it

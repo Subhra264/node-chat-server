@@ -52,11 +52,14 @@ export default {
             const user: AuthenticatedUser = req.user;
             const { groupId, channelId } = req.body;
             
-            dashBoardData.groups = (await user.populate('groups', 'name image').execPopulate()).groups;
+            // TODO: Fix the implementation properly
+            // dashBoardData.groups = (await user.populate('groups', 'name image').execPopulate()).groups;
+            dashBoardData.groups = user.groups;
 
             let isGroupIdValid = false;
+            // TODO: Use a better implementation
             dashBoardData.groups?.forEach((group) => {
-                if (group.id === groupId) {
+                if (JSON.stringify(group._id) === `"${groupId}"`) {
                     isGroupIdValid = true;
                 }
             });
