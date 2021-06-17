@@ -7,7 +7,7 @@ const UserSchema_Joi = Joi.object<UserSchema>({
         .min(3)
         .max(40),
 
-    userName: Joi.string()
+    username: Joi.string()
         .trim()
         .lowercase()
         .alphanum()

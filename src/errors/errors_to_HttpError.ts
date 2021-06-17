@@ -6,7 +6,7 @@ export default function convertToHttpErrorFrom (err: any): HttpError {
     if (err.isHttpError) return (err as HttpError);
 
     // Joi Error
-    if (err.isJoi) return HttpErrors.BadRequest();
+    if (err.isJoi) return HttpErrors.BadRequest(err.message);
 
     // incomplete
     return HttpErrors.ServerError();

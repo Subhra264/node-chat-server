@@ -68,14 +68,14 @@ export default {
 
             const group: GroupDocument = await Group.findById(groupId)
                 .populate('textChannels', 'name')
-                .populate('users', 'userName profilePic')
+                .populate('users', 'username profilePic')
                 .exec();
 
             const textChannel: TextChannelDocument = await TextChannel.findOne({
                     _id: channelId,
                     parentGroup: groupId
                 })
-                .populate('messages.sender', 'userName profilePic')
+                .populate('messages.sender', 'username profilePic')
                 .exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();

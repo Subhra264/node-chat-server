@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 export interface UserSchema {
     name?: string;
-    userName: string;
+    username: string;
     email: string;
     password: string;
     profilePic?: string;
@@ -28,7 +28,7 @@ const UserSchema = new Schema<UserDocument>({
         trim: true
     },
 
-    userName: {
+    username: {
         type: String,
         required: true,
         trim: true,

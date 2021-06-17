@@ -50,7 +50,7 @@ export default {
                     _id: textChannelId,
                     parentGroup: groupId
                 })
-                .populate('messages.sender', 'userName profilePic')
+                .populate('messages.sender', 'username profilePic')
                 .exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();
