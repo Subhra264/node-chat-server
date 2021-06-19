@@ -28,7 +28,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     return res.status(err.status).json({
         type: 'error',
-        error: {
+        message: {
             status: err.status,
             message: err.message
         }
