@@ -26,20 +26,20 @@ Router.post('/group', authenticate, async (req: Request, res: Response, next: Ne
         res.json({
             type: 'success',
             message: 'Group created successfully!'
-        })
+        });
     } catch(err) {
         next(err as HttpError);
     }
 });
 
-Router.post('/user/dashboard', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/user/dashboard/:groupId/:channelId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const dashBoardData = await GroupController.returnDashBoardData((req as AuthenticatedRequest), res, next);
 
         res.json({
             type: 'success',
             message: dashBoardData
-        })
+        });
     } catch(err) {
         next(err as HttpError);
     }

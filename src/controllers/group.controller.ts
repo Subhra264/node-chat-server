@@ -50,7 +50,7 @@ export default {
             // TODO: Give chatData a type
             const dashBoardData: any = {};
             const user: AuthenticatedUser = req.user;
-            const { groupId, channelId } = req.body;
+            const { groupId, channelId } = req.params;
             
             // TODO: Fix the implementation properly
             // dashBoardData.groups = (await user.populate('groups', 'name image').execPopulate()).groups;
