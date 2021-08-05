@@ -1,26 +1,46 @@
 import jwt from 'jsonwebtoken';
 import HttpErrors from '../../errors/http-errors';
 
+export enum TokenType {
+    ACCESS_TOKEN = 'ACCESS_TOKEN',
+    REFRESH_TOKEN = 'REFRESH_TOKEN'
+}
+
 /**
  * Returns the signed JsonWebToken
  * 
  * @param userId 
  * @returns Promise that resolves to a string
  */
-export async function signAccessToken(userId: string): Promise<string> {
-    
+export async function signJWTToken(userId: string, type: TokenType): Promise<string> {
+
     return new Promise((resolve, reject) => {
+
+        let key: string;
+        let expiresIn: string;
+        if (type === TokenType.ACCESS_TOKEN) {
+            if (!process.env.JWT_ACCESS_KEY) {
+                return reject(HttpErrors.ServerError());
+            }
+
+            key = process.env.JWT_ACCESS_KEY;
+            expiresIn = '1h';
+        } else {
+            if (!process.env.JWT_REFRESH_KEY) {
+                return reject(HttpErrors.ServerError());
+            }
+
+            key = process.env.JWT_REFRESH_KEY;
+            expiresIn = '15d';
+        }
+
         const payload = { userId };
         const options = {
-            expiresIn: '1h',
+            expiresIn,
             audience: userId
         };
 
-        if (!process.env.JWT_ACCESS_KEY) {
-            return reject(HttpErrors.ServerError());
-        }
-
-        jwt.sign(payload, process.env.JWT_ACCESS_KEY, options, (err: Error | null, token: string | undefined) => {
+        jwt.sign(payload, key, options, (err: Error | null, token: string | undefined) => {
             if (err || !token) return reject(HttpErrors.ServerError());
             resolve(token);
         });

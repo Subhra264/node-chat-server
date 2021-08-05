@@ -23,7 +23,7 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
 Router.post('/signin', async (req, res, next) => {
 
     try {
-        const accessToken: string = await AuthController.authenticateUser(req, res, next);
+        const accessToken = await AuthController.authenticateUser(req, res, next);
 
         res.json({
             type: 'success',
