@@ -1,15 +1,12 @@
 import jwt from 'jsonwebtoken';
 import HttpErrors from '../../errors/http-errors';
-
-export enum TokenType {
-    ACCESS_TOKEN = 'ACCESS_TOKEN',
-    REFRESH_TOKEN = 'REFRESH_TOKEN'
-}
+import { TokenType } from '../interfaces/JWTUtils';
 
 /**
  * Returns the signed JsonWebToken
  * 
- * @param userId 
+ * @param userId Payload for signing token
+ * @param type The Token Type, It has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to a string
  */
 export async function signJWTToken(userId: string, type: TokenType): Promise<string> {
@@ -50,17 +47,23 @@ export async function signJWTToken(userId: string, type: TokenType): Promise<str
 
 /**
  * Verifies the given token and returns the payload
- * @param token 
+ * @param token The token to verify
+ * @param type The Type of token, has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to the payload
  */
-export async function verifyToken(token: string): Promise<Record<string, unknown>> {
+export async function verifyToken(token: string, type: TokenType): Promise<Record<string, unknown>> {
 
     return new Promise((resolve, reject) => {
-        if (!process.env.JWT_ACCESS_KEY) {
-            return reject(HttpErrors.ServerError());
-        }
+        let key: string;
 
-        jwt.verify(token, process.env.JWT_ACCESS_KEY, (err, payload) => {
+        if (type == TokenType.ACCESS_TOKEN) {
+            if (!process.env.JWT_ACCESS_KEY) return reject(HttpErrors.ServerError());
+            key = process.env.JWT_ACCESS_KEY;
+        } else {
+            if (!process.env.JWT_REFRESH_KEY) return reject(HttpErrors.ServerError());
+            key = process.env.JWT_REFRESH_KEY;
+        }
+        jwt.verify(token, key, (err, payload) => {
             if (err || !payload) {
                 return reject(HttpErrors.Unauthorized());
             }

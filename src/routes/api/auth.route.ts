@@ -20,10 +20,24 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
 
 });
 
-Router.post('/signin', async (req, res, next) => {
+Router.post('/signin', async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const accessToken = await AuthController.authenticateUser(req, res, next);
+        const user = await AuthController.authenticateUser(req, res, next);
+
+        res.json({
+            type: 'success',
+            message: user
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+
+});
+
+Router.post('/refresh', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const accessToken: string = await AuthController.refreshAccessToken(req, res, next);
 
         res.json({
             type: 'success',
@@ -32,7 +46,6 @@ Router.post('/signin', async (req, res, next) => {
     } catch(err) {
         next(err as HttpError);
     }
-
-});
+})
 
 export = Router;

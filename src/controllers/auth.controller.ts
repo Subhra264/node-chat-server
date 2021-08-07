@@ -3,8 +3,9 @@ import User, { UserDocument, UserSchema } from "../models/User.model";
 import UserSchema_Joi from "../utils/validate_schema/validate_user"
 import { NextFunction, Request, Response } from 'express';
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
-import { signJWTToken, TokenType } from '../utils/jwt_utils/jwt_utils';
+import { signJWTToken, verifyToken } from '../utils/jwt_utils/jwt_utils';
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
+import { UserPayload, TokenType } from "../utils/interfaces/JWTUtils";
 
 export default {
     // Called when an user signs up
@@ -67,5 +68,34 @@ export default {
             throw convertToHttpErrorFrom(err);
         }
         
+    },
+
+    // Called when user requests for a new access-token
+    refreshAccessToken: async (req: Request, res: Response, next: NextFunction): Promise<string> => {
+        
+        try {
+            // User must send the refresh token as http-only cookie
+            if (!req.headers.cookie) throw HttpErrors.Unauthorized('Refresh Token not valid!');
+
+            const cookies: string[] = req.headers.cookie.split('; ');
+            let refreshToken: string = '';
+
+            for (const cookie of cookies) {
+                if (cookie.startsWith('refreshToken')) {
+                    refreshToken = cookie.slice(cookie.indexOf('=') + 1);
+                }
+            }
+
+            // If refreshToken is not present in the cookie, throw Unauthorized error
+            if (!refreshToken) throw HttpErrors.Unauthorized('Refresh Token not valid!');
+
+            const payload = (await verifyToken(refreshToken, TokenType.REFRESH_TOKEN)) as unknown as UserPayload;
+            if (!payload) throw HttpErrors.Unauthorized('Refresh Token not valid!');
+
+            const accessToken: string = await signJWTToken(payload.userId, TokenType.ACCESS_TOKEN);
+            return accessToken;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
     }
 }
