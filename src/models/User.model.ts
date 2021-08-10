@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema as SchemaType } from 'mongoose';
 import { comparePassword } from '../utils/encryption_utils/bcrypt_utils';
+import * as RedisClient from '../utils/redis_utils/redis_utils';
 const Schema = mongoose.Schema;
 
 export interface UserSchema {
@@ -100,11 +101,13 @@ UserSchema.methods.validatePassword = async function(password: string): Promise<
     } catch(err) {
         throw err;
     }
-}
+};
 
-UserSchema.post('save', (doc) => {
+UserSchema.post('save', async (doc: UserDocument) => {
     console.log('UserSchema post save function called along with this doc', doc);
-
+    console.log('Contains populate function??', doc.populate);
+    const user = await doc.populate('groups', 'name image').execPopulate();
+    await RedisClient.setex(doc.id, user, 3600, {json: true});
 });
 
 // interface UserModel extends Model<User> {
