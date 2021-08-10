@@ -4,7 +4,8 @@ import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import HttpErrors from "../errors/http-errors";
 import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel.model";
 import Group, { GroupDocument, GroupSchema } from "../models/Group.model";
-import AuthenticatedRequest, { AuthenticatedUser } from "../utils/interfaces/AuthenticatedRequest";
+import User, { UserDocument } from "../models/User.model";
+import AuthenticatedRequest, { AuthenticatedCachedUser } from "../utils/interfaces/AuthenticatedRequest";
 import groupSchema from "../utils/validate_schema/validate_group";
 
 // interface ChatData {
@@ -35,10 +36,38 @@ export default {
                 ]
             }) as GroupDocument).save();
 
-            req.user.groups.push(newGroup._id);
-            await req.user.save();
+            console.log('Req.user before new Group', req.user);
+            
+            let user: UserDocument | null = null;
+
+            // If req.user is not cached data
+            if ((req.user as UserDocument).updateOne) {
+                // req.user.groups.push(newGroup._id);
+                console.log('Req.user after pushing group', req.user);
+                // await req.user.save();
+                // await req.user.updateOne({ 
+                //     $push: { groups: newGroup._id}
+                // });
+
+                // Be careful here, AuthenticatedUser doesn't contain password and refresh-token
+                // Whereas, password is required in UserDocument.
+                // According to the current implementation, password is actually included in req.user
+                // So, for now, it can be safely casted to UserDocument.
+                user = req.user as UserDocument;
+            } else {
+                user = await User.findById(req.user._id).exec();
+            }
+
+            console.log('Updating user for new Group');
+            if (!user) throw HttpErrors.ServerError('Oops, something went wrong!!!');
+
+            // Don't use Document.updateOne or Document.update to update this document
+            // Both of them don't return the modified document
+            user.groups.push(newGroup._id);
+            await user.save();
 
         } catch(err) {
+            console.log('Error creating group,', err);
             throw convertToHttpErrorFrom(err);
         }
     },
@@ -49,7 +78,7 @@ export default {
 
             // TODO: Give chatData a type
             const dashBoardData: any = {};
-            const user: AuthenticatedUser = req.user;
+            const user: AuthenticatedCachedUser | UserDocument = req.user;
             const { groupId, channelId } = req.params;
             
             // TODO: Fix the implementation properly

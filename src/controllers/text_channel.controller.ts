@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import AuthenticatedRequest, { AuthenticatedUser } from "../utils/interfaces/AuthenticatedRequest";
+import AuthenticatedRequest, { AuthenticatedCachedUser } from "../utils/interfaces/AuthenticatedRequest";
 import TextChannel_Joi from "../utils/validate_schema/validate_text_channel";
 import HttpErrors from '../errors/http-errors';
 import Group from "../models/Group.model";
@@ -11,11 +11,17 @@ export default {
     createTextChannel: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
-            const user: AuthenticatedUser = req.user;
+            // Here, methods and properties of Document are not used, so it is safe
+            // to type cast user as AuthenticatedCachedUser.
+            const user: AuthenticatedCachedUser = req.user as AuthenticatedCachedUser;
 
             // Check if the user is part of the group
             let isAllowed = false;
             user.groups.forEach(groupId => {
+                // When req.user is cached data, req.user will not contain 'Document.id' getter property
+                // which returns the stringified value of Document._id. Hence, we must use the Document._id
+                // property, but again, the first time, when req.user is actually a Document,
+                // Document._id needs to be stringified.
                 if (JSON.stringify(groupId) === `"${validatedTextChannel.parentGroup}"`) {
                     isAllowed = true;
                 }
@@ -61,10 +67,10 @@ export default {
         }
     },
 
-    // Add a given message to the database
+    // Adds a given message to the database
     saveMessage: async (req: AuthenticatedRequest): Promise<void> => {
         try {
-            const user: AuthenticatedUser = req.user;
+            const user: AuthenticatedCachedUser = req.user as AuthenticatedCachedUser;
             const { channelId, message, groupId } = await MessageReqSchema_Joi.validateAsync(req.body);
 
             const textChannel: TextChannelDocument = await TextChannel.findOne({

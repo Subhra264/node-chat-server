@@ -26,6 +26,8 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 
 // Handle all the HttpErrors
 app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
+    console.log('Error in server', err);
+    
     return res.status(err.status).json({
         type: 'error',
         message: {

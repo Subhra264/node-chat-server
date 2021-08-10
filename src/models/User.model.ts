@@ -102,6 +102,11 @@ UserSchema.methods.validatePassword = async function(password: string): Promise<
     }
 }
 
+UserSchema.post('save', (doc) => {
+    console.log('UserSchema post save function called along with this doc', doc);
+
+});
+
 // interface UserModel extends Model<User> {
 //     validatePassword(password: string): Promise<boolean>
 // }
