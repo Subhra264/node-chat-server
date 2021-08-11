@@ -48,8 +48,13 @@ export default {
             const matchedPassword: boolean = await user.validatePassword(validatedUser.password);
             if (!matchedPassword) throw HttpErrors.Unauthorized('email/password not valid!');
 
-            const accessToken: string = await signJWTToken(user.id, TokenType.ACCESS_TOKEN);
-            const refreshToken: string = await signJWTToken(user.id, TokenType.REFRESH_TOKEN);
+            const userPayload: UserPayload = {
+                userId: user.id,
+                username: user.username
+            }
+
+            const accessToken: string = await signJWTToken(userPayload, TokenType.ACCESS_TOKEN);
+            const refreshToken: string = await signJWTToken(userPayload, TokenType.REFRESH_TOKEN);
 
             // Send back the refreshToken as a httponly cookie
             res.cookie('refreshToken', refreshToken, {
@@ -71,7 +76,7 @@ export default {
     },
 
     // Called when user requests for a new access-token
-    refreshAccessToken: async (req: Request, res: Response, next: NextFunction): Promise<string> => {
+    refreshAccessToken: async (req: Request, res: Response, next: NextFunction): Promise<any> => {
         
         try {
             // User must send the refresh token as http-only cookie
@@ -92,8 +97,11 @@ export default {
             const payload = (await verifyToken(refreshToken, TokenType.REFRESH_TOKEN)) as unknown as UserPayload;
             if (!payload) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const accessToken: string = await signJWTToken(payload.userId, TokenType.ACCESS_TOKEN);
-            return accessToken;
+            const accessToken: string = await signJWTToken(payload, TokenType.ACCESS_TOKEN);
+            return {
+                ...payload,
+                accessToken
+            };
         } catch(err) {
             throw convertToHttpErrorFrom(err);
         }

@@ -35,13 +35,13 @@ Router.post('/signin', async (req: Request, res: Response, next: NextFunction) =
 
 });
 
-Router.post('/refresh', async (req: Request, res: Response, next: NextFunction) => {
+Router.post('/refresh-token', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const accessToken: string = await AuthController.refreshAccessToken(req, res, next);
+        const user = await AuthController.refreshAccessToken(req, res, next);
 
         res.json({
             type: 'success',
-            message: accessToken
+            message: user
         });
     } catch(err) {
         next(err as HttpError);

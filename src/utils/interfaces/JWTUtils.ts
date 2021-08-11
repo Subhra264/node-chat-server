@@ -1,5 +1,6 @@
 export interface UserPayload {
     userId: string;
+    username: string;
 }
 
 export enum TokenType {

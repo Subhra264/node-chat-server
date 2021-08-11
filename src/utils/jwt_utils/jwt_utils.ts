@@ -1,15 +1,17 @@
 import jwt from 'jsonwebtoken';
 import HttpErrors from '../../errors/http-errors';
-import { TokenType } from '../interfaces/JWTUtils';
+import { TokenType, UserPayload } from '../interfaces/JWTUtils';
+
+export const JWT_ERROR_CODE = 'token_not_valid';
 
 /**
  * Returns the signed JsonWebToken
  * 
- * @param userId Payload for signing token
+ * @param payload Payload for signing token
  * @param type The Token Type, It has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to a string
  */
-export async function signJWTToken(userId: string, type: TokenType): Promise<string> {
+export async function signJWTToken(payload: UserPayload, type: TokenType): Promise<string> {
 
     return new Promise((resolve, reject) => {
 
@@ -31,10 +33,9 @@ export async function signJWTToken(userId: string, type: TokenType): Promise<str
             expiresIn = '15d';
         }
 
-        const payload = { userId };
         const options = {
             expiresIn,
-            audience: userId
+            audience: payload.userId
         };
 
         jwt.sign(payload, key, options, (err: Error | null, token: string | undefined) => {
@@ -65,7 +66,7 @@ export async function verifyToken(token: string, type: TokenType): Promise<Recor
         }
         jwt.verify(token, key, (err, payload) => {
             if (err || !payload) {
-                return reject(HttpErrors.Unauthorized());
+                return reject(HttpErrors.Unauthorized(JWT_ERROR_CODE));
             }
             resolve(payload as Record<string, unknown>); 
         });
