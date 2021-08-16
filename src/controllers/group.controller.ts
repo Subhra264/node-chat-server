@@ -5,7 +5,7 @@ import HttpErrors from "../errors/http-errors";
 import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel.model";
 import Group, { GroupDocument, GroupSchema } from "../models/Group.model";
 import User, { UserDocument } from "../models/User.model";
-import AuthenticatedRequest, { AuthenticatedCachedUser } from "../utils/interfaces/AuthenticatedRequest";
+import AuthenticatedRequest, { AuthenticatedCachedUser, GroupValidatedRequest } from "../utils/interfaces/AuthenticatedRequest";
 import groupSchema from "../utils/validate_schema/validate_group";
 
 // interface ChatData {
@@ -88,6 +88,7 @@ export default {
             let isGroupIdValid = false;
             // TODO: Use a better implementation
             dashBoardData.groups?.forEach((group) => {
+                console.log('DashboardData.groups.. group', group);
                 if (JSON.stringify(group._id) === `"${groupId}"`) {
                     isGroupIdValid = true;
                 }
@@ -96,7 +97,6 @@ export default {
             if (!isGroupIdValid) throw HttpErrors.Forbidden();
 
             const group: GroupDocument = await Group.findById(groupId)
-                .populate('textChannels', 'name')
                 .populate('users', 'username profilePic')
                 .exec();
 
@@ -119,5 +119,25 @@ export default {
         } catch(err) {
             throw convertToHttpErrorFrom(err);
         }
+    },
+
+    // Returns all the groups the user is part of
+    getGroups: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        const user: AuthenticatedCachedUser | UserDocument = req.user;
+
+        return {
+            groups: user.groups
+        };
+    },
+
+    // Returns all the members of the requested Group
+    getGroupMembers: async (req: GroupValidatedRequest, res: Response, next: NextFunction) => {
+
+        // Assuming that the groupId is valid
+        const populatedGroup = await req.validatedGroup
+            .populate('users', 'username profilePic')
+            .execPopulate();
+
+        return populatedGroup.users;
     }
 }

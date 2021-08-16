@@ -2,21 +2,9 @@ import express, { Request, Response, NextFunction} from 'express';
 import GroupController from '../../controllers/group.controller';
 import HttpError from '../../errors/HttpError';
 import authenticate from '../../middlewares/auth.middleware';
-import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
+import validateGroup from '../../middlewares/validate_group.middleware';
+import AuthenticatedRequest, { GroupValidatedRequest } from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
-
-Router.get('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        //const groupData = await GroupController.returnGroupData(req, res, next);
-
-        // res.json({
-        //     type: 'success',
-        //     message: groupData
-        // });
-    } catch(err) {
-        next(err as HttpError);
-    }
-});
 
 // POST request to create a new Group
 Router.post('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
@@ -39,6 +27,34 @@ Router.get('/user/dashboard/:groupId/:channelId', authenticate, async (req: Requ
         res.json({
             type: 'success',
             message: dashBoardData
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
+// Responds with a list of all the groups, the user is part of
+Router.get('/user/groups', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const groups = await GroupController.getGroups((req as GroupValidatedRequest), res, next);
+
+        res.json({
+            type: 'success',
+            message: groups
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
+// Responds with a list of all the members in the requested group
+Router.get('/groups/:groupId/members', authenticate, validateGroup, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const groupMembers = await GroupController.getGroupMembers(req as GroupValidatedRequest, res, next);
+
+        res.json({
+            type: 'success',
+            message: groupMembers
         });
     } catch(err) {
         next(err as HttpError);
