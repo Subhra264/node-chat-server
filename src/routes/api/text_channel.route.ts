@@ -7,12 +7,13 @@ const Router = express.Router();
 
 Router.get('/messages', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const messages = await TextChannelController.getMessages((req as AuthenticatedRequest));
+        const messages = await TextChannelController
+            .getMessages(req as AuthenticatedRequest);
 
         res.json({
             type: 'success',
             message: messages
-        })
+        });
     } catch(err) {
         next(err as HttpError);
     }
@@ -20,12 +21,13 @@ Router.get('/messages', authenticate, async (req: Request, res: Response, next: 
 
 Router.post('/', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await TextChannelController.createTextChannel((req as AuthenticatedRequest), res, next);
+        await TextChannelController
+            .createTextChannel(req as AuthenticatedRequest);
         
         res.json({
             type: 'success',
             message: 'text-channel created successfully!'
-        })
+        });
     } catch(err) {
         next(err as HttpError);
     }
@@ -33,7 +35,7 @@ Router.post('/', authenticate, async (req: Request, res: Response, next: NextFun
 
 Router.put('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await TextChannelController.saveMessage((req as AuthenticatedRequest));
+        await TextChannelController.saveMessage(req as AuthenticatedRequest);
 
         res.json({
             type: 'success',

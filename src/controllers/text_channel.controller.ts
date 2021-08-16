@@ -1,4 +1,3 @@
-import { NextFunction, Response } from "express";
 import AuthenticatedRequest, { AuthenticatedCachedUser } from "../utils/interfaces/AuthenticatedRequest";
 import TextChannel_Joi from "../utils/validate_schema/validate_text_channel";
 import HttpErrors from '../errors/http-errors';
@@ -7,8 +6,13 @@ import TextChannel, { Message, TextChannelDocument, TextChannelSchema } from "..
 import MessageReqSchema_Joi from "../utils/validate_schema/validate_message";
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 
+interface GetMessageReturnType {
+    name: string;
+    messages: Message[];
+}
+
 export default {
-    createTextChannel: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    createTextChannel: async (req: AuthenticatedRequest) => {
         try {
             const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
             // Here, methods and properties of Document are not used, so it is safe
@@ -40,7 +44,7 @@ export default {
         }
     },
 
-    getMessages: async (req: AuthenticatedRequest): Promise<Message[]> => {
+    getMessages: async (req: AuthenticatedRequest): Promise<GetMessageReturnType> => {
         try {
             const { groupId, textChannelId } = req.query;
 
@@ -60,7 +64,10 @@ export default {
                 .exec();
 
             if (!textChannel) throw HttpErrors.Forbidden();
-            return textChannel.messages;
+            return {
+                name: textChannel.name,
+                messages: textChannel.messages
+            };
 
         } catch(err) {
             throw convertToHttpErrorFrom(err);

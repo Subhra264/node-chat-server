@@ -11,7 +11,10 @@ export interface GroupDocument extends GroupSchema, Document {
     createdAt: Date;
     admins: [ SchemaType.Types.ObjectId ];
     users: [ SchemaType.Types.ObjectId ];
-    textChannels: [ SchemaType.Types.ObjectId ];
+    textChannels: [{
+        name: string;
+        reference: SchemaType.Types.ObjectId;
+    }];
     voiceChannels: [{
         name: string;
         reference: SchemaType.Types.ObjectId;
@@ -54,10 +57,14 @@ const GroupSchema = new Schema<GroupDocument>({
         }
     ],
 
+    // Denormalize textChannel name property as it is not supposed to change
     textChannels: [
         {
-            type: Schema.Types.ObjectId,
-            ref: 'TextChannel'
+            name: String,
+            reference: {
+                type: Schema.Types.ObjectId,
+                ref: 'TextChannel'
+            }
         }
     ],
 

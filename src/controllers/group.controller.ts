@@ -1,4 +1,3 @@
-import { NextFunction, Response } from "express";
 import mongoose from "mongoose";
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import HttpErrors from "../errors/http-errors";
@@ -13,7 +12,7 @@ import groupSchema from "../utils/validate_schema/validate_group";
 // }
 
 export default {
-    createGroup: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    createGroup: async (req: AuthenticatedRequest) => {
         try {
             const validatedGroup: GroupSchema = await groupSchema.validateAsync(req.body);
 
@@ -31,9 +30,10 @@ export default {
                 users: [
                     req.user._id
                 ],
-                textChannels: [
-                    welcomeDoc._id
-                ]
+                textChannels: [{
+                    name: welcomeDoc.name,
+                    reference: welcomeDoc._id
+                }]
             }) as GroupDocument).save();
 
             console.log('Req.user before new Group', req.user);
@@ -42,12 +42,6 @@ export default {
 
             // If req.user is not cached data
             if ((req.user as UserDocument).updateOne) {
-                // req.user.groups.push(newGroup._id);
-                console.log('Req.user after pushing group', req.user);
-                // await req.user.save();
-                // await req.user.updateOne({ 
-                //     $push: { groups: newGroup._id}
-                // });
 
                 // Be careful here, AuthenticatedUser doesn't contain password and refresh-token
                 // Whereas, password is required in UserDocument.
@@ -73,7 +67,7 @@ export default {
     },
 
     // TODO: Rethink over the data fetching implementation
-    returnDashBoardData: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    returnDashBoardData: async (req: AuthenticatedRequest) => {
         try {
 
             // TODO: Give chatData a type
@@ -122,22 +116,42 @@ export default {
     },
 
     // Returns all the groups the user is part of
-    getGroups: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const user: AuthenticatedCachedUser | UserDocument = req.user;
+    getGroups: async (req: AuthenticatedRequest) => {
+        
+        try {
+            const user: AuthenticatedCachedUser | UserDocument = req.user;
 
-        return {
-            groups: user.groups
-        };
+            return {
+                groups: user.groups
+            };
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
     },
 
     // Returns all the members of the requested Group
-    getGroupMembers: async (req: GroupValidatedRequest, res: Response, next: NextFunction) => {
+    getGroupMembers: async (req: GroupValidatedRequest) => {
 
-        // Assuming that the groupId is valid
-        const populatedGroup = await req.validatedGroup
-            .populate('users', 'username profilePic')
-            .execPopulate();
+        try {
+            // Assuming that the groupId is valid
+            const populatedGroup = await req.validatedGroup
+                .populate('users', 'username profilePic')
+                .execPopulate();
 
-        return populatedGroup.users;
+            return populatedGroup.users;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
+    },
+
+    // Returns a list of channels
+    getChannels: async (req: GroupValidatedRequest) => {
+        try {
+            const channelList = req.validatedGroup.textChannels;
+
+            return channelList;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
     }
 }

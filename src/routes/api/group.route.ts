@@ -9,7 +9,7 @@ const Router = express.Router();
 // POST request to create a new Group
 Router.post('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await GroupController.createGroup((req as AuthenticatedRequest), res,  next);
+        await GroupController.createGroup(req as AuthenticatedRequest);
 
         res.json({
             type: 'success',
@@ -22,7 +22,7 @@ Router.post('/group', authenticate, async (req: Request, res: Response, next: Ne
 
 Router.get('/user/dashboard/:groupId/:channelId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const dashBoardData = await GroupController.returnDashBoardData((req as AuthenticatedRequest), res, next);
+        const dashBoardData = await GroupController.returnDashBoardData(req as AuthenticatedRequest);
 
         res.json({
             type: 'success',
@@ -36,7 +36,7 @@ Router.get('/user/dashboard/:groupId/:channelId', authenticate, async (req: Requ
 // Responds with a list of all the groups, the user is part of
 Router.get('/user/groups', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const groups = await GroupController.getGroups((req as GroupValidatedRequest), res, next);
+        const groups = await GroupController.getGroups(req as GroupValidatedRequest);
 
         res.json({
             type: 'success',
@@ -50,11 +50,25 @@ Router.get('/user/groups', authenticate, async (req: Request, res: Response, nex
 // Responds with a list of all the members in the requested group
 Router.get('/groups/:groupId/members', authenticate, validateGroup, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const groupMembers = await GroupController.getGroupMembers(req as GroupValidatedRequest, res, next);
+        const groupMembers = await GroupController.getGroupMembers(req as GroupValidatedRequest);
 
         res.json({
             type: 'success',
             message: groupMembers
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
+// Responds with a list of all the channels in the requested group
+Router.get('/groups/:groupId/channels', authenticate, validateGroup, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const groupChannels = await GroupController.getChannels(req as GroupValidatedRequest);
+
+        res.json({
+            type: 'success',
+            message: groupChannels
         });
     } catch(err) {
         next(err as HttpError);
