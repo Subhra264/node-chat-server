@@ -9,11 +9,11 @@ const Router = express.Router();
 // POST request to create a new Group
 Router.post('/group', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await GroupController.createGroup(req as AuthenticatedRequest);
+        const newGroup = await GroupController.createGroup(req as AuthenticatedRequest);
 
         res.json({
             type: 'success',
-            message: 'Group created successfully!'
+            message: newGroup
         });
     } catch(err) {
         next(err as HttpError);

@@ -27,6 +27,7 @@ export default {
             const newGroup: GroupDocument = await (new Group({
                 _id: parentGroupId,
                 ...validatedGroup,
+                defaultChannel: welcomeDoc._id,
                 users: [
                     req.user._id
                 ],
@@ -59,6 +60,11 @@ export default {
             // Both of them don't return the modified document
             user.groups.push(newGroup._id);
             await user.save();
+
+            return {
+                groupId: newGroup.id,
+                defaultChannelId: newGroup.defaultChannel
+            };
 
         } catch(err) {
             console.log('Error creating group,', err);
@@ -121,9 +127,8 @@ export default {
         try {
             const user: AuthenticatedCachedUser | UserDocument = req.user;
 
-            return {
-                groups: user.groups
-            };
+            // Todo: Must also return the id of each group's welcome channel
+            return user.groups;
         } catch(err) {
             throw convertToHttpErrorFrom(err);
         }
