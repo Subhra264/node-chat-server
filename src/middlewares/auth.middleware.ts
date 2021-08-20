@@ -25,7 +25,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
             // Then check in the database
             // TODO: Rethink over the implementation logic
             user = await User.findById(payload.userId)
-                .populate('groups', 'name image')
+                .populate('groups', 'name image defaultChannel')
                 .exec();
             if (!user) throw HttpErrors.Unauthorized();
 

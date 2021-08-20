@@ -46,6 +46,6 @@ Router.post('/refresh-token', async (req: Request, res: Response, next: NextFunc
     } catch(err) {
         next(err as HttpError);
     }
-})
+});
 
 export = Router;
