@@ -62,8 +62,10 @@ export default {
             await user.save();
 
             return {
-                groupId: newGroup.id,
-                defaultChannelId: newGroup.defaultChannel
+                _id: newGroup.id,
+                defaultChannel: newGroup.defaultChannel,
+                name: newGroup.name,
+                image: newGroup.image
             };
 
         } catch(err) {

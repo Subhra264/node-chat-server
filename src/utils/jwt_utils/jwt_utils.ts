@@ -19,6 +19,7 @@ export async function signJWTToken(payload: UserPayload, type: TokenType): Promi
         let expiresIn: string;
         if (type === TokenType.ACCESS_TOKEN) {
             if (!process.env.JWT_ACCESS_KEY) {
+                console.log('process.env.JWT_ACCESS_KEY', process.env.JWT_ACCESS_KEY);
                 return reject(HttpErrors.ServerError());
             }
 
@@ -26,6 +27,7 @@ export async function signJWTToken(payload: UserPayload, type: TokenType): Promi
             expiresIn = '1h';
         } else {
             if (!process.env.JWT_REFRESH_KEY) {
+                console.log('process.env.JWT_REFRESH_KEY', process.env.JWT_REFRESH_KEY);
                 return reject(HttpErrors.ServerError());
             }
 
@@ -37,8 +39,11 @@ export async function signJWTToken(payload: UserPayload, type: TokenType): Promi
             expiresIn,
             audience: payload.userId
         };
+        console.log('Token signing payload', payload);
 
         jwt.sign(payload, key, options, (err: Error | null, token: string | undefined) => {
+            console.log('Error signing JWT', err?.message);
+            console.log('Token after signing', token);
             if (err || !token) return reject(HttpErrors.ServerError());
             resolve(token);
         });
@@ -66,6 +71,7 @@ export async function verifyToken(token: string, type: TokenType): Promise<Recor
         }
         jwt.verify(token, key, (err, payload) => {
             if (err || !payload) {
+                console.log('JWT verify token err', err?.message);
                 return reject(HttpErrors.Unauthorized(JWT_ERROR_CODE));
             }
             resolve(payload as Record<string, unknown>); 

@@ -1,7 +1,7 @@
 import AuthenticatedRequest, { AuthenticatedCachedUser } from "../utils/interfaces/AuthenticatedRequest";
 import TextChannel_Joi from "../utils/validate_schema/validate_text_channel";
 import HttpErrors from '../errors/http-errors';
-import Group from "../models/Group.model";
+import Group, { GroupDocument } from "../models/Group.model";
 import TextChannel, { Message, TextChannelDocument, TextChannelSchema } from "../models/channels/TextChannel.model";
 import MessageReqSchema_Joi from "../utils/validate_schema/validate_message";
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
@@ -12,7 +12,7 @@ interface GetMessageReturnType {
 }
 
 export default {
-    createTextChannel: async (req: AuthenticatedRequest) => {
+    createTextChannel: async (req: AuthenticatedRequest): Promise<any> => {
         try {
             const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
             // Here, methods and properties of Document are not used, so it is safe
@@ -21,12 +21,12 @@ export default {
 
             // Check if the user is part of the group
             let isAllowed = false;
-            user.groups.forEach(groupId => {
+            user.groups.forEach((group: any) => {
                 // When req.user is cached data, req.user will not contain 'Document.id' getter property
                 // which returns the stringified value of Document._id. Hence, we must use the Document._id
                 // property, but again, the first time, when req.user is actually a Document,
                 // Document._id needs to be stringified.
-                if (JSON.stringify(groupId) === `"${validatedTextChannel.parentGroup}"`) {
+                if (JSON.stringify(group._id) === `"${validatedTextChannel.parentGroup}"`) {
                     isAllowed = true;
                 }
             });
@@ -35,9 +35,16 @@ export default {
 
             const newTextChannel: TextChannelDocument = await (new TextChannel(validatedTextChannel) as TextChannelDocument).save();
 
-            await Group.findByIdAndUpdate(validatedTextChannel.parentGroup, {
-                    $push: { textChannels: newTextChannel._id }
-                }).exec();
+            const newTextChannel_ = {
+                name: newTextChannel.name,
+                reference: newTextChannel._id
+            };
+
+            const parentGroup: GroupDocument = await Group.findById(validatedTextChannel.parentGroup).exec();
+            console.log('ParentGroup createTextChannel', parentGroup);
+            parentGroup.textChannels.push(newTextChannel_);
+
+            return newTextChannel_;
 
         } catch(err) {
             throw convertToHttpErrorFrom(err);

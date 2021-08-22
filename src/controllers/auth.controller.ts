@@ -94,12 +94,13 @@ export default {
             // If refreshToken is not present in the cookie, throw Unauthorized error
             if (!refreshToken) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const payload = (await verifyToken(refreshToken, TokenType.REFRESH_TOKEN)) as unknown as UserPayload;
-            if (!payload) throw HttpErrors.Unauthorized('Refresh Token not valid!');
+            const { userId, username } = (await verifyToken(refreshToken, TokenType.REFRESH_TOKEN)) as unknown as UserPayload;
+            if (!userId || !username) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const accessToken: string = await signJWTToken(payload, TokenType.ACCESS_TOKEN);
+            const accessToken: string = await signJWTToken({ userId, username }, TokenType.ACCESS_TOKEN);
             return {
-                ...payload,
+                userId,
+                username,
                 accessToken
             };
         } catch(err) {

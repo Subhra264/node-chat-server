@@ -21,12 +21,12 @@ Router.get('/messages', authenticate, async (req: Request, res: Response, next: 
 
 Router.post('/', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await TextChannelController
+        const newChannel = await TextChannelController
             .createTextChannel(req as AuthenticatedRequest);
         
         res.json({
             type: 'success',
-            message: 'text-channel created successfully!'
+            message: newChannel
         });
     } catch(err) {
         next(err as HttpError);
