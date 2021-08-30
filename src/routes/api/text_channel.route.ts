@@ -33,7 +33,7 @@ Router.post('/', authenticate, async (req: Request, res: Response, next: NextFun
     }
 });
 
-Router.put('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.post('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         await TextChannelController.saveMessage(req as AuthenticatedRequest);
 
