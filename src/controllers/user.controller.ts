@@ -1,5 +1,6 @@
 import convertToHttpErrorFrom from '../errors/errors_to_HttpError';
 import HttpErrors from '../errors/http-errors';
+import SelfMessages, { SelfMessage, SelfMessagesDocument } from '../models/SelfMessages.model';
 import User, { UserDocument } from '../models/User.model';
 import AuthenticatedRequest, { AuthenticatedCachedUser } from '../utils/interfaces/AuthenticatedRequest';
 
@@ -38,6 +39,22 @@ export default {
             }));
         } catch(err) {
             throw convertToHttpErrorFrom(err);            
+        }
+    },
+
+    newSelfMessage: async (req: AuthenticatedRequest) => {
+        try {
+            const user: UserDocument | AuthenticatedCachedUser = req.user;
+
+            // Find and load the SelfMessages Document corresponding to this user
+            const selfMessages: SelfMessagesDocument = await SelfMessages.findById(user.selfMessages).exec();
+            // The req.body is expected to have data in SelfMessage format
+            selfMessages.messages.push(req.body as SelfMessage);
+            await selfMessages.save();
+
+            return selfMessages.messages;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
         }
     }
 }

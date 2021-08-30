@@ -19,6 +19,7 @@ export interface UserDocument extends UserSchema, Document {
     friends: [ SchemaType.Types.ObjectId ];
     sentFriendRequests: [ SchemaType.Types.ObjectId ];
     receivedFriendRequests: [ SchemaType.Types.ObjectId ];
+    selfMessages: SchemaType.Types.ObjectId;
 }
 
 const UserSchema = new Schema<UserDocument>({
@@ -65,30 +66,36 @@ const UserSchema = new Schema<UserDocument>({
     groups: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Group"
+            ref: 'Group'
         }
     ],
 
     friends: [
         {
             type: Schema.Types.ObjectId,
-            ref : "User"
+            ref : 'User'
         }
     ],
 
     sentFriendRequests: [
         {
             type: Schema.Types.ObjectId,
-            ref : "User"
+            ref : 'User'
         }
     ],
 
     receivedFriendRequests: [
         {
             type: Schema.Types.ObjectId,
-            ref : "User"
+            ref : 'User'
         }
     ],
+
+    selfMessages: {
+        type: Schema.Types.ObjectId,
+        ref: 'SelfMessages',
+        required: true
+    },
 
     refreshToken: {
         type: String
@@ -114,4 +121,4 @@ UserSchema.post('save', async (doc: UserDocument) => {
 //     validatePassword(password: string): Promise<boolean>
 // }
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model('User', UserSchema);

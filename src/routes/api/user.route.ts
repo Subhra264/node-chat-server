@@ -31,4 +31,17 @@ Router.get('/', authenticate, async (req: Request, res: Response, next: NextFunc
     }
 });
 
+Router.post('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await UserController.newSelfMessage(req as AuthenticatedRequest);
+
+        res.json({
+            type: 'success',
+            message: 'Message saved successfully!'
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
 export = Router;

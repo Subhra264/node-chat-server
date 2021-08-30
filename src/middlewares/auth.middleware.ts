@@ -29,7 +29,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
             user = await User.findById(payload.userId)
                 .populate('groups', 'name image defaultChannel')
                 .exec();
-            if (!user) throw HttpErrors.Unauthorized('hello moto');
+            if (!user) throw HttpErrors.Unauthorized();
 
             // TODO: Set a separate setex time for dev(300s) and prod(3600s)
             // Don't use await here
