@@ -3,7 +3,10 @@ const Schema = mongoose.Schema;
 
 export interface Message {
     message: string;
-    sender: SchemaType.Types.ObjectId;
+    sender: {
+        username: string;
+        reference: SchemaType.Types.ObjectId;
+    };
 }
 
 export interface TextChannelSchema {
@@ -36,12 +39,14 @@ const TextChannelSchema = new Schema<TextChannelDocument>({
 
     messages: [
         {
-            message: {
-                type: String
-            },
+            message: String,
             sender: {
-                type: Schema.Types.ObjectId,
-                ref: 'User'
+                // Denormalize username as it is not supposed to be changed
+                username: String,
+                reference: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'User'
+                }
             }
         }
     ]

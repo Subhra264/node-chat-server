@@ -96,7 +96,10 @@ export default {
             
             textChannel.messages.push({
                 message,
-                sender: user._id
+                sender: {
+                    username: user.username,
+                    reference: user._id
+                }
             });
 
             await textChannel.save();
