@@ -53,7 +53,7 @@ export default {
 
     getMessages: async (req: AuthenticatedRequest): Promise<GetMessageReturnType> => {
         try {
-            const { groupId, textChannelId } = req.query;
+            const { groupId, textChannelId } = req.params;
 
             let isAllowed = false;
             req.user.groups.forEach((groupId_) => {

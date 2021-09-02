@@ -42,6 +42,19 @@ export default {
         }
     },
 
+    // Returns a list of all self-messages
+    getSelfMessages: async (req: AuthenticatedRequest) => {
+        try {
+            const user: UserDocument | AuthenticatedCachedUser = req.user;
+
+            const selfMessages: SelfMessagesDocument = await SelfMessages.findById(user.selfMessages).exec();
+            return selfMessages.messages;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
+    },
+
+    // saves new self-message
     newSelfMessage: async (req: AuthenticatedRequest) => {
         try {
             const user: UserDocument | AuthenticatedCachedUser = req.user;

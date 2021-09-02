@@ -31,7 +31,22 @@ Router.get('/', authenticate, async (req: Request, res: Response, next: NextFunc
     }
 });
 
-Router.post('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET request handler that Returns all self-messages
+Router.get('/messages', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const selfMessages = await UserController.getSelfMessages(req as AuthenticatedRequest);
+
+        res.json({
+            type: 'success',
+            message: selfMessages
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
+// POST request handler to save a new self-message
+Router.post('/messages', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         await UserController.newSelfMessage(req as AuthenticatedRequest);
 

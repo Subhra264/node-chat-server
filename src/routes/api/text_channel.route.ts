@@ -5,7 +5,7 @@ import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
 
-Router.get('/messages', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/messages/:groupId/:textChannelId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const messages = await TextChannelController
             .getMessages(req as AuthenticatedRequest);
