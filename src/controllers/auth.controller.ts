@@ -2,10 +2,12 @@ import HttpErrors from "../errors/http-errors";
 import User, { UserDocument, UserSchema } from "../models/User.model";
 import UserSchema_Joi from "../utils/validate_schema/validate_user"
 import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 import { signJWTToken, verifyToken } from '../utils/jwt_utils/jwt_utils';
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import { UserPayload, TokenType } from "../utils/interfaces/JWTUtils";
+import SelfMessages, { SelfMessagesDocument } from "../models/SelfMessages.model";
 
 export default {
     // Called when an user signs up
@@ -22,14 +24,26 @@ export default {
             if (existingUser) throw HttpErrors.Conflict('User already exists!');
 
             const hashedPassword: string = await hashPassword(validatedUser.password);
-
+            
+            const newSelfMessagesDocId = new mongoose.Types.ObjectId();
             const user: UserDocument = new User({
                 ...validatedUser,
-                password: hashedPassword
+                password: hashedPassword,
+                selfMessages: newSelfMessagesDocId
             });
             await user.save();
 
+            const newSelfMessagesDoc: SelfMessagesDocument = new SelfMessages({
+                // Make its _id equal to newSelfMessagesDocId
+                // so that the corresponding user always has
+                // the reference to this SelfMessages Document
+                _id: newSelfMessagesDocId,
+                user: user._id
+            });
+            await newSelfMessagesDoc.save();
+
         } catch(err) {
+            console.log('Error creating new user: ', (err as Error).message);
             throw convertToHttpErrorFrom(err);
         }
     },

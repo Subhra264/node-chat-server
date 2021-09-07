@@ -23,7 +23,10 @@ const SelfMessagesSchema = new Schema<SelfMessagesDocument>({
     messages: [
         {
             message: String,
-            date: Date
+            date: {
+                type: Date,
+                default: Date.now
+            }
         }
     ]
 });
