@@ -36,8 +36,6 @@ export default {
                     reference: welcomeDoc._id
                 }]
             }) as GroupDocument).save();
-
-            console.log('Req.user before new Group', req.user);
             
             let user: UserDocument | null = null;
 
@@ -53,7 +51,6 @@ export default {
                 user = await User.findById(req.user._id).exec();
             }
 
-            console.log('Updating user for new Group');
             if (!user) throw HttpErrors.ServerError('Oops, something went wrong!!!');
 
             // Don't use Document.updateOne or Document.update to update this document
@@ -69,7 +66,6 @@ export default {
             };
 
         } catch(err) {
-            console.log('Error creating group,', err);
             throw convertToHttpErrorFrom(err);
         }
     },
@@ -90,7 +86,6 @@ export default {
             let isGroupIdValid = false;
             // TODO: Use a better implementation
             dashBoardData.groups?.forEach((group) => {
-                console.log('DashboardData.groups.. group', group);
                 if (JSON.stringify(group._id) === `"${groupId}"`) {
                     isGroupIdValid = true;
                 }

@@ -6,7 +6,7 @@ import convertToHttpErrorFrom from '../errors/errors_to_HttpError';
 
 export default async function validateGroup (req: Request, res: Response, next: NextFunction) {
     try {
-        const user =  (req as AuthenticatedRequest).user;
+        const user = (req as AuthenticatedRequest).user;
         const { groupId } = req.params;
         const groups = user.groups;
 
@@ -26,7 +26,6 @@ export default async function validateGroup (req: Request, res: Response, next: 
         next();
 
     } catch(err) {
-        console.log('Error validating groupId in middleware...', err.message);
         err = convertToHttpErrorFrom(err);
         next(err);
     }

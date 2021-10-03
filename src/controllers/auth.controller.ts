@@ -78,7 +78,6 @@ export default {
 
             return {
                 accessToken,
-                // refreshToken,
                 userId: user._id,
                 username: user.username
             };
