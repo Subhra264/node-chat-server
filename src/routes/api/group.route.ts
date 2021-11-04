@@ -75,4 +75,17 @@ Router.get('/groups/:groupId/channels', authenticate, validateGroup, async (req:
     }
 });
 
+Router.post('/groups/join-group/:encryptedGroupId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await GroupController.joinGroup(req as AuthenticatedRequest);
+
+        res.json({
+            type: 'success',
+            message: 'Joined Group!'
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
 export = Router;

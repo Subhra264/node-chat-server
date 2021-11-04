@@ -3,7 +3,8 @@ export interface UserPayload {
     username: string;
 }
 
-export enum TokenType {
-    ACCESS_TOKEN = 'ACCESS_TOKEN',
-    REFRESH_TOKEN = 'REFRESH_TOKEN'
+export enum TokenKeyType {
+    JWT_ACCESS_KEY = 'JWT_ACCESS_KEY',
+    JWT_REFRESH_KEY = 'JWT_REFRESH_KEY',
+    JWT_GROUP_INVITATION_KEY = 'JWT_GROUP_INVITATION_KEY'
 }

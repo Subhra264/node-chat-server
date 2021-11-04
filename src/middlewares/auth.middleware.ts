@@ -4,7 +4,7 @@ import HttpErrors from "../errors/http-errors";
 import HttpError from "../errors/HttpError";
 import User, { UserDocument } from "../models/User.model";
 import AuthenticatedRequest from "../utils/interfaces/AuthenticatedRequest";
-import { UserPayload, TokenType } from "../utils/interfaces/JWTUtils";
+import { UserPayload, TokenKeyType } from "../utils/interfaces/JWTUtils";
 import { JWT_ERROR_CODE, verifyToken } from "../utils/jwt_utils/jwt_utils";
 import * as RedisClient from '../utils/redis_utils/redis_utils';
 
@@ -17,7 +17,7 @@ export default async function authenticate(req: Request, res: Response, next: Ne
         if (!token.startsWith('Bearer ')) throw HttpErrors.Unauthorized();
 
         token = token.replace('Bearer ', '');
-        const payload = (await verifyToken(token, TokenType.ACCESS_TOKEN)) as unknown as UserPayload;
+        const payload = (await verifyToken(token, TokenKeyType.JWT_ACCESS_KEY)) as unknown as UserPayload;
 
         // Check in the cache first
         let user = (await RedisClient.get(payload.userId, { json: true })) as UserDocument | null;

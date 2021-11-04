@@ -5,6 +5,8 @@ import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel
 import Group, { GroupDocument, GroupSchema } from "../models/Group.model";
 import User, { UserDocument } from "../models/User.model";
 import AuthenticatedRequest, { AuthenticatedCachedUser, GroupValidatedRequest } from "../utils/interfaces/AuthenticatedRequest";
+import { TokenKeyType } from "../utils/interfaces/JWTUtils";
+import { verifyToken } from "../utils/jwt_utils/jwt_utils";
 import groupSchema from "../utils/validate_schema/validate_group";
 
 // interface ChatData {
@@ -152,6 +154,39 @@ export default {
             const channelList = req.validatedGroup.textChannels;
 
             return channelList;
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
+    },
+
+    joinGroup: async (req: AuthenticatedRequest) => {
+        try {
+            const { groupId } = req.params;
+            let user: UserDocument | null = null;
+            if (!groupId) throw HttpErrors.BadRequest();
+
+            const payload = await verifyToken(groupId, TokenKeyType.JWT_GROUP_INVITATION_KEY);
+            const group: GroupDocument = await Group.findById(payload.groupId).exec();
+
+            if ((req.user as UserDocument).updateOne) {
+
+                // Be careful here, AuthenticatedUser doesn't contain password and refresh-token
+                // Whereas, password is required in UserDocument.
+                // According to the current implementation, password is actually included in req.user
+                // So, for now, it can be safely casted to UserDocument.
+                user = req.user as UserDocument;
+            } else {
+                user = await User.findById(req.user._id).exec();
+            }
+            if (!user) throw HttpErrors.ServerError('Oops, something went wrong!!!');
+            group.users.push(user._id);
+
+            // Don't use Document.updateOne or Document.update to update this document
+            // Both of them don't return the modified document
+            user.groups.push(group._id);
+            await user.save();
+
+
         } catch(err) {
             throw convertToHttpErrorFrom(err);
         }

@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { hashPassword } from '../utils/encryption_utils/bcrypt_utils';
 import { signJWTToken, verifyToken } from '../utils/jwt_utils/jwt_utils';
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
-import { UserPayload, TokenType } from "../utils/interfaces/JWTUtils";
+import { UserPayload, TokenKeyType } from "../utils/interfaces/JWTUtils";
 import SelfMessages, { SelfMessagesDocument } from "../models/SelfMessages.model";
 
 export default {
@@ -67,8 +67,8 @@ export default {
                 username: user.username
             }
 
-            const accessToken: string = await signJWTToken(userPayload, TokenType.ACCESS_TOKEN);
-            const refreshToken: string = await signJWTToken(userPayload, TokenType.REFRESH_TOKEN);
+            const accessToken: string = await signJWTToken(userPayload, TokenKeyType.JWT_ACCESS_KEY);
+            const refreshToken: string = await signJWTToken(userPayload, TokenKeyType.JWT_REFRESH_KEY);
 
             // Send back the refreshToken as a httponly cookie
             res.cookie('refreshToken', refreshToken, {
@@ -107,10 +107,10 @@ export default {
             // If refreshToken is not present in the cookie, throw Unauthorized error
             if (!refreshToken) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const { userId, username } = (await verifyToken(refreshToken, TokenType.REFRESH_TOKEN)) as unknown as UserPayload;
+            const { userId, username } = (await verifyToken(refreshToken, TokenKeyType.JWT_REFRESH_KEY)) as unknown as UserPayload;
             if (!userId || !username) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const accessToken: string = await signJWTToken({ userId, username }, TokenType.ACCESS_TOKEN);
+            const accessToken: string = await signJWTToken({ userId, username }, TokenKeyType.JWT_ACCESS_KEY);
             return {
                 userId,
                 username,
