@@ -1,6 +1,13 @@
-export interface UserPayload {
+export interface JWTTokenSignPayload {
     userId: string;
+}
+
+export interface UserPayload extends JWTTokenSignPayload {
     username: string;
+}
+
+export interface GroupInvitationPayload extends JWTTokenSignPayload {
+    groupId: string;
 }
 
 export enum TokenKeyType {

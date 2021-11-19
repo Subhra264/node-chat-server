@@ -5,8 +5,8 @@ import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel
 import Group, { GroupDocument, GroupSchema } from "../models/Group.model";
 import User, { UserDocument } from "../models/User.model";
 import AuthenticatedRequest, { AuthenticatedCachedUser, GroupValidatedRequest } from "../utils/interfaces/AuthenticatedRequest";
-import { TokenKeyType } from "../utils/interfaces/JWTUtils";
-import { verifyToken } from "../utils/jwt_utils/jwt_utils";
+import { GroupInvitationPayload, TokenKeyType } from "../utils/interfaces/JWTUtils";
+import { signJWTToken, verifyToken } from "../utils/jwt_utils/jwt_utils";
 import groupSchema from "../utils/validate_schema/validate_group";
 
 // interface ChatData {
@@ -24,6 +24,10 @@ type GetChannelsReturnType = [{
     name: string;
     reference: Schema.Types.ObjectId;
 }];
+
+interface GroupInvitationToken {
+    invitationToken: string;
+}
 
 export default {
     createGroup: async (req: AuthenticatedRequest): Promise<CreateGroupReturnType> => {
@@ -171,13 +175,42 @@ export default {
         }
     },
 
+    createGroupInvitationToken: async (req: AuthenticatedRequest): Promise<GroupInvitationToken> => {
+        try {
+            const { groupId } = req.body;
+            const user: AuthenticatedCachedUser | UserDocument = req.user;
+            
+            let isAllowed = false;
+            user.groups.map((group: any) => {
+                // Check if user is part of the requested group
+                if (JSON.stringify(group._id) === `"${groupId}"`) {
+                    isAllowed = true;
+                }
+            });
+
+            if (!isAllowed) throw HttpErrors.Forbidden();
+
+            const groupInvitationPayload: GroupInvitationPayload = {
+                groupId,
+                userId: user._id
+            };
+            const groupInvitationToken = await signJWTToken(groupInvitationPayload, TokenKeyType.JWT_GROUP_INVITATION_KEY);
+
+            return {
+                invitationToken: groupInvitationToken
+            };
+        } catch(err) {
+            throw convertToHttpErrorFrom(err);
+        }
+    },
+
     joinGroup: async (req: AuthenticatedRequest): Promise<void> => {
         try {
-            const { groupId } = req.params;
+            const { encryptedGroupId } = req.body;
             let user: UserDocument | null = null;
-            if (!groupId) throw HttpErrors.BadRequest();
+            if (!encryptedGroupId) throw HttpErrors.BadRequest();
 
-            const payload = await verifyToken(groupId, TokenKeyType.JWT_GROUP_INVITATION_KEY);
+            const payload = await verifyToken(encryptedGroupId, TokenKeyType.JWT_GROUP_INVITATION_KEY);
             const group: GroupDocument = await Group.findById(payload.groupId).exec();
 
             if ((req.user as UserDocument).updateOne) {

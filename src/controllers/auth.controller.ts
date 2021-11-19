@@ -75,7 +75,7 @@ export default {
             const userPayload: UserPayload = {
                 userId: user.id,
                 username: user.username
-            }
+            };
 
             const accessToken: string = await signJWTToken(userPayload, TokenKeyType.JWT_ACCESS_KEY);
             const refreshToken: string = await signJWTToken(userPayload, TokenKeyType.JWT_REFRESH_KEY);
@@ -117,13 +117,12 @@ export default {
             // If refreshToken is not present in the cookie, throw Unauthorized error
             if (!refreshToken) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const { userId, username } = (await verifyToken(refreshToken, TokenKeyType.JWT_REFRESH_KEY)) as unknown as UserPayload;
-            if (!userId || !username) throw HttpErrors.Unauthorized('Refresh Token not valid!');
+            const userPayload = (await verifyToken(refreshToken, TokenKeyType.JWT_REFRESH_KEY)) as unknown as UserPayload;
+            if (!userPayload.userId || !userPayload.username) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
-            const accessToken: string = await signJWTToken({ userId, username }, TokenKeyType.JWT_ACCESS_KEY);
+            const accessToken: string = await signJWTToken(userPayload, TokenKeyType.JWT_ACCESS_KEY);
             return {
-                userId,
-                username,
+                ...userPayload,
                 accessToken
             };
         } catch(err) {

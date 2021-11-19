@@ -75,7 +75,20 @@ Router.get('/groups/:groupId/channels', authenticate, validateGroup, async (req:
     }
 });
 
-Router.post('/groups/join-group/:encryptedGroupId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.post('/groups/create-invitation', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = await GroupController.createGroupInvitationToken(req as AuthenticatedRequest);
+
+        res.json({
+            type: 'success',
+            message: token
+        });
+    } catch(err) {
+        next(err as HttpError);
+    }
+});
+
+Router.post('/groups/join-group/', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         await GroupController.joinGroup(req as AuthenticatedRequest);
 

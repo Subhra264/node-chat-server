@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import HttpErrors from '../../errors/http-errors';
-import { TokenKeyType, UserPayload } from '../interfaces/JWTUtils';
+import { JWTTokenSignPayload, TokenKeyType } from '../interfaces/JWTUtils';
 
 export const JWT_ERROR_CODE = 'token_not_valid';
 
@@ -11,7 +11,7 @@ export const JWT_ERROR_CODE = 'token_not_valid';
  * @param keyType The Token Type, It has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to a string
  */
-export async function signJWTToken(payload: UserPayload, keyType: TokenKeyType): Promise<string> {
+export async function signJWTToken(payload: JWTTokenSignPayload, keyType: TokenKeyType): Promise<string> {
 
     return new Promise((resolve, reject) => {
 
