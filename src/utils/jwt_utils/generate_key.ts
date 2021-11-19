@@ -1,8 +1,16 @@
 import crypto from 'crypto';
+import { TokenKeyType } from '../interfaces/JWTUtils';
 
-export default function generateJWTKeys(): string[] {
-    const accessTokenKey: string = crypto.randomBytes(32).toString('hex');
-    const refreshTokenKey: string = crypto.randomBytes(32).toString('hex');
+interface JWTKeys {
+    [jwtKey: string]: string;
+}
 
-    return [accessTokenKey, refreshTokenKey];
+export default function generateJWTKeys(): JWTKeys {
+    const jwtKeys: JWTKeys = {};
+
+    for (const keyType in TokenKeyType) {
+        jwtKeys[keyType] = crypto.randomBytes(32).toString('hex');
+    }
+
+    return jwtKeys;
 }

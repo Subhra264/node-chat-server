@@ -1,12 +1,14 @@
 import fs from 'fs';
+import { TokenKeyType } from '../interfaces/JWTUtils';
 import generateJWTKeys from '../jwt_utils/generate_key';
 
 export function appendKeysToENV(envPath: string): void {
-    const [accessTokenKey, refreshTokenKey] = generateJWTKeys();
+    const jwtKeys = generateJWTKeys();
 
     try {
-        fs.appendFileSync(envPath, `\nJWT_ACCESS_KEY=${accessTokenKey}`);
-        fs.appendFileSync(envPath, `\nJWT_REFRESH_KEY=${refreshTokenKey}`);
+        for (const tokenKey in jwtKeys) {
+            fs.appendFileSync(envPath, `\n${tokenKey}=${jwtKeys[tokenKey]}`);
+        } 
 
     } catch(err) {
         console.error(err);
@@ -22,9 +24,14 @@ export function removeKeysFromENV(envPath: string): void {
             encoding: 'utf8'
         });
         envVars.split('\n').forEach((envVar: string) => {
-            if (!envVar.startsWith('JWT_ACCESS_KEY') && !envVar.startsWith('JWT_REFRESH_KEY')) {
-                envVars_.push(envVar);
+            let matched = false;
+            for (const tokenKeyType in TokenKeyType) {
+                if (envVar.startsWith(tokenKeyType)) {
+                    matched = true;
+                    break;
+                }
             }
+            if (!matched) envVars_.push(envVar);
         });
 
         fs.writeFileSync(envPath, envVars_.join('\n'));
