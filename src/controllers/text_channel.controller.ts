@@ -43,6 +43,7 @@ export default {
             const parentGroup: GroupDocument = await Group.findById(validatedTextChannel.parentGroup).exec();
             console.log('ParentGroup createTextChannel', parentGroup);
             parentGroup.textChannels.push(newTextChannel_);
+            parentGroup.save();
 
             return newTextChannel_;
 
