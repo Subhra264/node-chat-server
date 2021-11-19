@@ -7,8 +7,8 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
 
     try {
 
-        // const accessToken: string = await AuthController.createAccount(req, res, next);
-        await AuthController.createAccount(req, res, next);
+        // const accessToken: string = await AuthController.createAccount(req);
+        await AuthController.createAccount(req);
 
         res.json({
             type: 'success',
@@ -23,7 +23,7 @@ Router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
 Router.post('/signin', async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const user = await AuthController.authenticateUser(req, res, next);
+        const user = await AuthController.authenticateUser(req, res);
 
         res.json({
             type: 'success',
@@ -37,7 +37,7 @@ Router.post('/signin', async (req: Request, res: Response, next: NextFunction) =
 
 Router.post('/refresh-token', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await AuthController.refreshAccessToken(req, res, next);
+        const user = await AuthController.refreshAccessToken(req);
 
         res.json({
             type: 'success',

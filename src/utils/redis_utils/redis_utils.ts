@@ -23,7 +23,7 @@ export async function get(key: string, options?: Options): Promise<any> {
     });
 }
 
-export async function setex(key: string, value: any, seconds: number = 3600, options?: Options): Promise<boolean> {
+export async function setex(key: string, value: any, seconds = 3600, options?: Options): Promise<boolean> {
     return new Promise((resolve) => {
         if (options?.json) value = JSON.stringify(value);
         redisClient.setex(key, seconds, value, (err, reply: string) => {

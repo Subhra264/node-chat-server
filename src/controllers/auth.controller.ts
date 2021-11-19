@@ -9,9 +9,19 @@ import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import { UserPayload, TokenKeyType } from "../utils/interfaces/JWTUtils";
 import SelfMessages, { SelfMessagesDocument } from "../models/SelfMessages.model";
 
+interface AuthenticateUserReturnType {
+    accessToken: string;
+    userId: any;
+    username: string;
+}
+
+interface RefreshAccessTokenReturnType extends AuthenticateUserReturnType {
+    userId: string;
+}
+
 export default {
     // Called when an user signs up
-    createAccount: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    createAccount: async (req: Request): Promise<void> => {
 
         try {
             // Validate the req.body
@@ -49,7 +59,7 @@ export default {
     },
 
     // Called when an user logs in
-    authenticateUser: async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    authenticateUser: async (req: Request, res: Response): Promise<AuthenticateUserReturnType> => {
 
         try {
             const validatedUser: UserSchema = await UserSchema_Joi.validateAsync(req.body);
@@ -89,14 +99,14 @@ export default {
     },
 
     // Called when user requests for a new access-token
-    refreshAccessToken: async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    refreshAccessToken: async (req: Request): Promise<RefreshAccessTokenReturnType> => {
         
         try {
             // User must send the refresh token as http-only cookie
             if (!req.headers.cookie) throw HttpErrors.Unauthorized('Refresh Token not valid!');
 
             const cookies: string[] = req.headers.cookie.split('; ');
-            let refreshToken: string = '';
+            let refreshToken = '';
 
             for (const cookie of cookies) {
                 if (cookie.startsWith('refreshToken')) {

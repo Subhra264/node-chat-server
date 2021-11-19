@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import convertToHttpErrorFrom from "../errors/errors_to_HttpError";
 import HttpErrors from "../errors/http-errors";
 import TextChannel, { TextChannelDocument } from "../models/channels/TextChannel.model";
@@ -13,8 +13,20 @@ import groupSchema from "../utils/validate_schema/validate_group";
 //     groups
 // }
 
+interface CreateGroupReturnType {
+    _id: any;
+    defaultChannel: Schema.Types.ObjectId;
+    name: string;
+    image: string | undefined;
+}
+
+type GetChannelsReturnType = [{
+    name: string;
+    reference: Schema.Types.ObjectId;
+}];
+
 export default {
-    createGroup: async (req: AuthenticatedRequest) => {
+    createGroup: async (req: AuthenticatedRequest): Promise<CreateGroupReturnType> => {
         try {
             const validatedGroup: GroupSchema = await groupSchema.validateAsync(req.body);
 
@@ -73,7 +85,7 @@ export default {
     },
 
     // TODO: Rethink over the data fetching implementation
-    returnDashBoardData: async (req: AuthenticatedRequest) => {
+    returnDashBoardData: async (req: AuthenticatedRequest): Promise<any> => {
         try {
 
             // TODO: Give chatData a type
@@ -121,7 +133,7 @@ export default {
     },
 
     // Returns all the groups the user is part of
-    getGroups: async (req: AuthenticatedRequest) => {
+    getGroups: async (req: AuthenticatedRequest): Promise<[Schema.Types.ObjectId]> => {
         
         try {
             const user: AuthenticatedCachedUser | UserDocument = req.user;
@@ -134,7 +146,7 @@ export default {
     },
 
     // Returns all the members of the requested Group
-    getGroupMembers: async (req: GroupValidatedRequest) => {
+    getGroupMembers: async (req: GroupValidatedRequest): Promise<[Schema.Types.ObjectId]> => {
 
         try {
             // Assuming that the groupId is valid
@@ -149,7 +161,7 @@ export default {
     },
 
     // Returns a list of channels
-    getChannels: async (req: GroupValidatedRequest) => {
+    getChannels: async (req: GroupValidatedRequest): Promise<GetChannelsReturnType> => {
         try {
             const channelList = req.validatedGroup.textChannels;
 
@@ -159,7 +171,7 @@ export default {
         }
     },
 
-    joinGroup: async (req: AuthenticatedRequest) => {
+    joinGroup: async (req: AuthenticatedRequest): Promise<void> => {
         try {
             const { groupId } = req.params;
             let user: UserDocument | null = null;
@@ -185,7 +197,6 @@ export default {
             // Both of them don't return the modified document
             user.groups.push(group._id);
             await user.save();
-
 
         } catch(err) {
             throw convertToHttpErrorFrom(err);

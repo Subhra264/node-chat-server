@@ -51,12 +51,12 @@ class InitRedis {
     }
 
     // Initialize redis
-    public static init() {
+    public static init(): void {
         if (!this.redisClient_) this.redisClient_ = new InitRedis();
     }
 
     // Get the Redis client
-    public static get redisClient() {
+    public static get redisClient(): InitRedis {
         this.init();
         return this.redisClient_;
     }

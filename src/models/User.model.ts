@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema as SchemaType } from 'mongoose';
+import mongoose, { Document, Schema as SchemaType } from 'mongoose';
 import { comparePassword } from '../utils/encryption_utils/bcrypt_utils';
 import * as RedisClient from '../utils/redis_utils/redis_utils';
 const Schema = mongoose.Schema;

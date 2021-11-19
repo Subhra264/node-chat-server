@@ -8,7 +8,7 @@ import { UserPayload, TokenKeyType } from "../utils/interfaces/JWTUtils";
 import { JWT_ERROR_CODE, verifyToken } from "../utils/jwt_utils/jwt_utils";
 import * as RedisClient from '../utils/redis_utils/redis_utils';
 
-export default async function authenticate(req: Request, res: Response, next: NextFunction) {
+export default async function authenticate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         let token: string | undefined = req.headers['authorization'];
         

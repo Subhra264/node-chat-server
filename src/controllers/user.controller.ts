@@ -1,3 +1,4 @@
+import { Schema } from 'mongoose';
 import convertToHttpErrorFrom from '../errors/errors_to_HttpError';
 import HttpErrors from '../errors/http-errors';
 import SelfMessages, { SelfMessage, SelfMessagesDocument } from '../models/SelfMessages.model';
@@ -5,7 +6,7 @@ import User, { UserDocument } from '../models/User.model';
 import AuthenticatedRequest, { AuthenticatedCachedUser } from '../utils/interfaces/AuthenticatedRequest';
 
 export default {
-    getFriendList: async (req: AuthenticatedRequest) => {
+    getFriendList: async (req: AuthenticatedRequest): Promise<[Schema.Types.ObjectId]> => {
         try {
             let user: UserDocument | AuthenticatedCachedUser = req.user;
 
@@ -29,7 +30,7 @@ export default {
         }
     },
 
-    getProfileData: async (req: AuthenticatedRequest) => {
+    getProfileData: async (req: AuthenticatedRequest): Promise<any> => {
         try {
             const user: UserDocument | AuthenticatedCachedUser = req.user;
 
@@ -43,7 +44,7 @@ export default {
     },
 
     // Returns a list of all self-messages
-    getSelfMessages: async (req: AuthenticatedRequest) => {
+    getSelfMessages: async (req: AuthenticatedRequest): Promise<[SelfMessage]> => {
         try {
             const user: UserDocument | AuthenticatedCachedUser = req.user;
 
@@ -55,7 +56,7 @@ export default {
     },
 
     // saves new self-message
-    newSelfMessage: async (req: AuthenticatedRequest) => {
+    newSelfMessage: async (req: AuthenticatedRequest): Promise<[SelfMessage]> => {
         try {
             const user: UserDocument | AuthenticatedCachedUser = req.user;
 

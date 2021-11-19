@@ -23,7 +23,7 @@ export = {
      * @param msg 
      * @returns Returns a BadRequest Error
      */
-    BadRequest: (msg: string = 'Bad Request'): HttpError => {
+    BadRequest: (msg = 'Bad Request'): HttpError => {
         return createError(msg, 400);
     },
 
@@ -33,7 +33,7 @@ export = {
      * @param msg 
      * @returns Returns a Unauthorized Error
      */
-    Unauthorized: (msg: string = 'Unauthorized request'): HttpError => {
+    Unauthorized: (msg = 'Unauthorized request'): HttpError => {
         return createError(msg, 401);
     },
 
@@ -43,7 +43,7 @@ export = {
      * @param msg 
      * @returns Returns a Forbidden Error
      */
-    Forbidden: (msg: string = 'Access Forbidden'): HttpError => {
+    Forbidden: (msg = 'Access Forbidden'): HttpError => {
         return createError(msg, 403);
     },
 
@@ -53,7 +53,7 @@ export = {
      * @param msg 
      * @returns Returns a NotFound Error
      */
-     NotFound: (msg: string = 'Not Found!'): HttpError => {
+     NotFound: (msg = 'Not Found!'): HttpError => {
         return createError(msg, 404);
     },
 
@@ -63,7 +63,7 @@ export = {
      * @param msg 
      * @returns Returns a NotAcceptable Error
      */
-    NotAcceptable: (msg: string = 'Not Acceptable'): HttpError => {
+    NotAcceptable: (msg = 'Not Acceptable'): HttpError => {
         return createError(msg, 406);
     },
 
@@ -73,7 +73,7 @@ export = {
      * @param msg 
      * @returns Returns a Conflict Error
      */
-    Conflict: (msg: string = 'Conflict'): HttpError => {
+    Conflict: (msg = 'Conflict'): HttpError => {
         return createError(msg, 409);
     }, 
 
@@ -83,7 +83,7 @@ export = {
      * @param msg 
      * @returns Returns a UnprocessableEntity Error
      */
-    UnprocessableEntity: (msg: string = 'Unprocessable Entity'): HttpError => {
+    UnprocessableEntity: (msg = 'Unprocessable Entity'): HttpError => {
         return createError(msg, 422);
     },
 
@@ -93,7 +93,7 @@ export = {
      * @param msg 
      * @returns Returns a ServerError
      */
-    ServerError: (msg: string = 'Internal Server Error'): HttpError => {
+    ServerError: (msg = 'Internal Server Error'): HttpError => {
         return createError(msg, 500);
     }
 };

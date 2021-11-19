@@ -15,32 +15,13 @@ export async function signJWTToken(payload: UserPayload, keyType: TokenKeyType):
 
     return new Promise((resolve, reject) => {
 
-        let key: string | undefined;
-        let expiresIn: string = '1h';
+        const key: string | undefined = process.env[keyType];
+        let expiresIn = '1h';
 
-        key = process.env[keyType];
         console.log('keyType :', keyType, 'key :', key);
         if (!key) return reject(HttpErrors.ServerError());
 
         if (keyType === TokenKeyType.JWT_REFRESH_KEY) expiresIn = '15d';
-        
-        // if (keyType === TokenKeyType.JWT_ACCESS_KEY) {
-        //     if (!process.env.JWT_ACCESS_KEY) {
-        //         console.log('process.env.JWT_ACCESS_KEY', process.env.JWT_ACCESS_KEY);
-        //         return reject(HttpErrors.ServerError());
-        //     }
-
-        //     key = process.env.JWT_ACCESS_KEY;
-        //     expiresIn = '1h';
-        // } else {
-        //     if (!process.env.JWT_REFRESH_KEY) {
-        //         console.log('process.env.JWT_REFRESH_KEY', process.env.JWT_REFRESH_KEY);
-        //         return reject(HttpErrors.ServerError());
-        //     }
-
-        //     key = process.env.JWT_REFRESH_KEY;
-        //     expiresIn = '15d';
-        // }
 
         const options = {
             expiresIn,
@@ -67,21 +48,9 @@ export async function signJWTToken(payload: UserPayload, keyType: TokenKeyType):
 export async function verifyToken(token: string, keyType: TokenKeyType): Promise<Record<string, unknown>> {
 
     return new Promise((resolve, reject) => {
-        let key: string | undefined;
+        const key: string | undefined = process.env[keyType];
 
-        key = process.env[keyType];
         if (!key) return reject(HttpErrors.ServerError());
-        
-        // if (type == TokenType.ACCESS_TOKEN) {
-        //     if (!process.env.JWT_ACCESS_KEY) return reject(HttpErrors.ServerError());
-        //     key = process.env.JWT_ACCESS_KEY;
-        // } else if (type == TokenType.GROUP_INVITATION_TOKEN) {
-        //     if (!process.env.JWT_GROUP_INVITATION_KEY) return reject(HttpErrors.ServerError());
-        //     key = process.env.JWT_GROUP_INVITATION_KEY;
-        // } else {
-        //     if (!process.env.JWT_REFRESH_KEY) return reject(HttpErrors.ServerError());
-        //     key = process.env.JWT_REFRESH_KEY;
-        // }
 
         jwt.verify(token, key, (err, payload) => {
             if (err || !payload) {

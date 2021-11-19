@@ -4,7 +4,7 @@ import Group, { GroupDocument } from '../models/Group.model';
 import HttpErrors from '../errors/http-errors';
 import convertToHttpErrorFrom from '../errors/errors_to_HttpError';
 
-export default async function validateGroup (req: Request, res: Response, next: NextFunction) {
+export default async function validateGroup (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const user = (req as AuthenticatedRequest).user;
         const { groupId } = req.params;

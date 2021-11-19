@@ -12,7 +12,7 @@ interface GetMessageReturnType {
 }
 
 export default {
-    createTextChannel: async (req: AuthenticatedRequest): Promise<any> => {
+    createTextChannel: async (req: AuthenticatedRequest): Promise<{ name: string; reference: any; }> => {
         try {
             const validatedTextChannel: TextChannelSchema = await TextChannel_Joi.validateAsync(req.body);
             // Here, methods and properties of Document are not used, so it is safe
