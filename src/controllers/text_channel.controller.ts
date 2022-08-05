@@ -66,7 +66,7 @@ export default {
             if (!isAllowed) throw HttpErrors.Forbidden();
             const textChannel: TextChannelDocument = await TextChannel.findOne({
                     _id: textChannelId,
-                    parentGroup: groupId
+                    parentGroup: groupId as any
                 })
                 .populate('messages.sender', 'username profilePic')
                 .exec();
@@ -92,9 +92,9 @@ export default {
                     _id: channelId, 
                     parentGroup: groupId
                 }).exec();
-            
+
             if (!textChannel) throw HttpErrors.Forbidden();
-            
+
             textChannel.messages.push({
                 message,
                 sender: {
@@ -104,7 +104,7 @@ export default {
             });
 
             await textChannel.save();
-            
+
         } catch(err) {
             throw convertToHttpErrorFrom(err);
         }

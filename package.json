@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Backend application for node-chat-desktop and node-chat-web",
   "main": "cluster.js",
+  "gypfile": true,
   "scripts": {
     "dev": "ts-node ./src/cluster.ts",
     "dev:nodemon": "nodemon",
     "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix"
+    "lint-and-fix": "eslint . --ext .ts --fix",
+    "build:cpp": "node-gyp rebuild",
+    "clean:cpp": "node-gyp clean"
   },
   "author": "Subhra264",
   "license": "ISC",
@@ -33,6 +36,7 @@
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.4",
+    "node-addon-api": "^5.0.0",
     "redis": "^3.1.2",
     "socket.io": "^4.0.1",
     "socket.io-redis": "^6.1.0"
