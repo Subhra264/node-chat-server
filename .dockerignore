@@ -1,0 +1,6 @@
+.gitignore
+.env
+api_testing.http
+build/
+dist/
+node_modules/
