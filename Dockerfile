@@ -1,10 +1,10 @@
 FROM node:16
 
-WORKDIR /use/src/app
+WORKDIR /src
 
 COPY package.json yarn.lock ./
-RUN yarn
+RUN npm install -g yarn && yarn ci && yarn add -g node-gyp
 COPY . .
 
 EXPOSE 8000
-CMD yarn build:cpp && yarn dev
+CMD [ "yarn", "dev:cpp" ]

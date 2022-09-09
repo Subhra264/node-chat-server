@@ -4,3 +4,4 @@ api_testing.http
 build/
 dist/
 node_modules/
+.git/

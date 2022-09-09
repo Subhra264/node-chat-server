@@ -6,6 +6,7 @@
   "gypfile": true,
   "scripts": {
     "dev": "ts-node ./src/cluster.ts",
+    "dev:cpp": "yarn build:cpp && yarn dev",
     "dev:nodemon": "nodemon",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
