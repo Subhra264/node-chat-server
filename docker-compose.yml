@@ -4,11 +4,11 @@ services:
     build: .
     # ports:
     #   - 8000:8000
-  ngnix:
-    image: ngnix:latest
+  nginx:
+    image: nginx:latest
     depends_on:
       - server
     volumes:
-      - ./config/ngnix:/etc/ngnix/conf.d
+      - ./config/nginx:/etc/nginx/conf.d
     ports:
       - '8000:8000'
