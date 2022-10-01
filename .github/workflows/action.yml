@@ -1,0 +1,16 @@
+name: Build server
+on: push
+jobs:
+  build_linux_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Building started"
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+      - name: Install node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - run: npm ci
+      - run: npm install -g node-gyp
+      - run: npm run build:cpp
