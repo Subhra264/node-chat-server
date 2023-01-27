@@ -6,37 +6,42 @@ export const JWT_ERROR_CODE = 'token_not_valid';
 
 /**
  * Returns the signed JsonWebToken
- * 
+ *
  * @param payload Payload for signing token
  * @param keyType The Token Type, It has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to a string
  */
-export async function signJWTToken(payload: JWTTokenSignPayload, keyType: TokenKeyType): Promise<string> {
+export async function signJWTToken(
+  payload: JWTTokenSignPayload,
+  keyType: TokenKeyType,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const key: string | undefined = process.env[keyType];
+    let expiresIn = '1h';
 
-    return new Promise((resolve, reject) => {
+    console.log('keyType :', keyType, 'key :', key);
+    if (!key) return reject(HttpErrors.ServerError());
 
-        const key: string | undefined = process.env[keyType];
-        let expiresIn = '1h';
+    if (keyType === TokenKeyType.JWT_REFRESH_KEY) expiresIn = '15d';
 
-        console.log('keyType :', keyType, 'key :', key);
-        if (!key) return reject(HttpErrors.ServerError());
+    const options = {
+      expiresIn,
+      audience: payload.userId,
+    };
+    console.log('Token signing payload', payload);
 
-        if (keyType === TokenKeyType.JWT_REFRESH_KEY) expiresIn = '15d';
-
-        const options = {
-            expiresIn,
-            audience: payload.userId
-        };
-        console.log('Token signing payload', payload);
-
-        jwt.sign(payload, key, options, (err: Error | null, token: string | undefined) => {
-            console.log('Error signing JWT', err?.message);
-            console.log('Token after signing', token);
-            if (err || !token) return reject(HttpErrors.ServerError());
-            resolve(token);
-        });
-    });
-    
+    jwt.sign(
+      payload,
+      key,
+      options,
+      (err: Error | null, token: string | undefined) => {
+        console.log('Error signing JWT', err?.message);
+        console.log('Token after signing', token);
+        if (err || !token) return reject(HttpErrors.ServerError());
+        resolve(token);
+      },
+    );
+  });
 }
 
 /**
@@ -45,19 +50,21 @@ export async function signJWTToken(payload: JWTTokenSignPayload, keyType: TokenK
  * @param keyType The Type of token, has two possible values - 1. ACCESS_TOKEN 2. REFRESH_TOKEN
  * @returns Promise that resolves to the payload
  */
-export async function verifyToken(token: string, keyType: TokenKeyType): Promise<Record<string, unknown>> {
+export async function verifyToken(
+  token: string,
+  keyType: TokenKeyType,
+): Promise<Record<string, unknown>> {
+  return new Promise((resolve, reject) => {
+    const key: string | undefined = process.env[keyType];
 
-    return new Promise((resolve, reject) => {
-        const key: string | undefined = process.env[keyType];
+    if (!key) return reject(HttpErrors.ServerError());
 
-        if (!key) return reject(HttpErrors.ServerError());
-
-        jwt.verify(token, key, (err, payload) => {
-            if (err || !payload) {
-                console.log('JWT verify token err', err?.message);
-                return reject(HttpErrors.Unauthorized(JWT_ERROR_CODE));
-            }
-            resolve(payload as Record<string, unknown>); 
-        });
+    jwt.verify(token, key, (err, payload) => {
+      if (err || !payload) {
+        console.log('JWT verify token err', err?.message);
+        return reject(HttpErrors.Unauthorized(JWT_ERROR_CODE));
+      }
+      resolve(payload as Record<string, unknown>);
     });
+  });
 }

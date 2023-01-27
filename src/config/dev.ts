@@ -1,14 +1,17 @@
 import path from 'path';
-import { appendKeysToENV, removeKeysFromENV } from '../utils/config_utils/env_io';
+import {
+  appendKeysToENV,
+  removeKeysFromENV,
+} from '../utils/config_utils/env_io';
 
 const envPath = path.resolve(__dirname, '../../.env');
 
 function appendToENV() {
-    appendKeysToENV(envPath);
+  appendKeysToENV(envPath);
 }
 
 process.on('exit', () => {
-    removeKeysFromENV(envPath);
+  removeKeysFromENV(envPath);
 });
 
 appendToENV();

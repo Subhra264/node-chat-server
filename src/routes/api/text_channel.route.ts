@@ -5,46 +5,59 @@ import authenticate from '../../middlewares/auth.middleware';
 import AuthenticatedRequest from '../../utils/interfaces/AuthenticatedRequest';
 const Router = express.Router();
 
-Router.get('/messages/:groupId/:textChannelId', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.get(
+  '/messages/:groupId/:textChannelId',
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const messages = await TextChannelController
-            .getMessages(req as AuthenticatedRequest);
+      const messages = await TextChannelController.getMessages(
+        req as AuthenticatedRequest,
+      );
 
-        res.json({
-            type: 'success',
-            message: messages
-        });
-    } catch(err) {
-        next(err as HttpError);
+      res.json({
+        type: 'success',
+        message: messages,
+      });
+    } catch (err) {
+      next(err as HttpError);
     }
-});
+  },
+);
 
-Router.post('/', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+Router.post(
+  '/',
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const newChannel = await TextChannelController
-            .createTextChannel(req as AuthenticatedRequest);
-        
-        res.json({
-            type: 'success',
-            message: newChannel
-        });
-    } catch(err) {
-        next(err as HttpError);
-    }
-});
+      const newChannel = await TextChannelController.createTextChannel(
+        req as AuthenticatedRequest,
+      );
 
-Router.post('/message', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+      res.json({
+        type: 'success',
+        message: newChannel,
+      });
+    } catch (err) {
+      next(err as HttpError);
+    }
+  },
+);
+
+Router.post(
+  '/message',
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        await TextChannelController.saveMessage(req as AuthenticatedRequest);
+      await TextChannelController.saveMessage(req as AuthenticatedRequest);
 
-        res.json({
-            type: 'success',
-            message: 'Message saved successfully!'
-        });
-        
-    } catch(err) {
-        next(err as HttpError);
+      res.json({
+        type: 'success',
+        message: 'Message saved successfully!',
+      });
+    } catch (err) {
+      next(err as HttpError);
     }
-});
+  },
+);
 
 export = Router;

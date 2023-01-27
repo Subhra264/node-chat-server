@@ -20,23 +20,25 @@ require('./routes/routes');
 
 // Handle NotFound error
 app.use(async (req: Request, res: Response, next: NextFunction) => {
-    const error = HttpErrors.NotFound();
-    next(error);
+  const error = HttpErrors.NotFound();
+  next(error);
 });
 
 // Handle all the HttpErrors
-app.use(async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
+app.use(
+  async (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     console.log('Error in server', err);
-    
+
     return res.status(err.status).json({
-        type: 'error',
-        message: {
-            status: err.status,
-            message: err.message
-        }
+      type: 'error',
+      message: {
+        status: err.status,
+        message: err.message,
+      },
     });
-});
+  },
+);
 
 server.listen(PORT, () => {
-    console.log('Server running at', PORT);
+  console.log('Server running at', PORT);
 });

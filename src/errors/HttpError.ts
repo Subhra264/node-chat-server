@@ -3,6 +3,6 @@
  */
 
 export default interface HttpError extends Error {
-    status: number;
-    isHttpError: boolean;
+  status: number;
+  isHttpError: boolean;
 }
