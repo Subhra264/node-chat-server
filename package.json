@@ -1,0 +1,34 @@
+{
+  "name": "node-chat-server",
+  "version": "1.0.0",
+  "description": "Microservice based server for node-chat-client",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "npx prettier --write .",
+    "prettier:rest": "npx prettier --write ./rest-service",
+    "prettier:socket": "npx prettier --write ./socket-service"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Subhra264/node-chat-server.git"
+  },
+  "keywords": [
+    "chat",
+    "socket",
+    "microservice",
+    "mongoDB",
+    "express",
+    "typescript",
+    "redis"
+  ],
+  "author": "Subhradeep Chakraborty",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Subhra264/node-chat-server/issues"
+  },
+  "homepage": "https://github.com/Subhra264/node-chat-server#readme",
+  "devDependencies": {
+    "prettier": "^2.8.3"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "socket-service",
+  "version": "1.0.0",
+  "description": "Socket microservice for node-chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "socket",
+    "microservice"
+  ],
+  "author": "Subhradeep Chakraborty",
+  "license": "ISC"
+}
