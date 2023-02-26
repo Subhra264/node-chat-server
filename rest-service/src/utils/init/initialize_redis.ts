@@ -1,6 +1,4 @@
 import redis, { RedisClient } from 'redis';
-import InitApp from './initialize_app';
-import { createAdapter } from 'socket.io-redis';
 
 const redisURI = process.env.REDIS_URI;
 const redisPwd = process.env.REDIS_PWD;
@@ -42,14 +40,6 @@ class InitRedis {
 
     // Redis subscriber client
     this.subClient = this.pubClient.duplicate();
-
-    // Create an adapter for the socket.io instance
-    InitApp.app.io.adapter(
-      createAdapter({
-        pubClient: this.pubClient,
-        subClient: this.subClient,
-      }),
-    );
   }
 
   // Initialize redis

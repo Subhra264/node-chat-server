@@ -130,6 +130,7 @@ export default {
 
       const textChannel: TextChannelDocument = await TextChannel.findOne({
         _id: channelId,
+        // @ts-ignore
         parentGroup: groupId,
       })
         .populate('messages.sender', 'username profilePic')
