@@ -13,7 +13,14 @@ if (cluster.isPrimary) {
     console.log(
       `process ${worker.process.pid} died, code = ${code}, signal=${signal}`,
     );
-    cluster.fork();
+    if (code !== 5) {
+      cluster.fork();
+    } else if (!cluster.workers || !Object.keys(cluster.workers).length) {
+      console.error(
+        "Couldn't connect to Redis storage, check your redis credentials...",
+      );
+      process.exit();
+    }
   });
 } else {
   console.log(`Inside worker process ${process.pid}`);
