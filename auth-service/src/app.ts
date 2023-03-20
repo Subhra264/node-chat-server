@@ -1,4 +1,6 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+import httpErrors, { HttpError } from './errors/http-errors';
+import routes from './routes';
 
 if (process.env.NODE_ENVIRONMENT !== 'production') {
   require('dotenv').config();
@@ -9,10 +11,25 @@ const PORT = process.env.PORT || 7000;
 
 app.use(express.json());
 
+routes.forEach((route) => {
+  app.use(route[0], route[1]);
+});
+
 app.get('/', (req: Request, res: Response) => {
   res.json({
     status: 'success',
     message: 'OK',
+  });
+});
+
+app.use(async (_: Request, __: Response, next: NextFunction) => {
+  next(httpErrors.NotFound());
+});
+
+app.use(async (err: HttpError, _: Request, res: Response) => {
+  res.json({
+    status: 'error',
+    message: err.message,
   });
 });
 
