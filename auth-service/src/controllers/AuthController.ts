@@ -12,14 +12,14 @@ import {
 import convertToHttpErrorFrom from '../errors/errorsToHttpError';
 import PrismaORM from '../init/init.prisma';
 
-interface AuthenticateUserReturnType {
+interface AuthenticatedUser {
   accessToken: string;
   userId: any;
   username: string;
 }
 
-interface RefreshAccessTokenReturnType extends AuthenticateUserReturnType {
-  userId: string;
+interface AuthenticatedUserRefresh extends AuthenticatedUser {
+  refreshToken: string;
 }
 
 const prisma = PrismaORM.get();
@@ -59,10 +59,7 @@ export default {
   },
 
   // Called when an user logs in
-  authenticateUser: async (
-    req: Request,
-    res: Response,
-  ): Promise<AuthenticateUserReturnType> => {
+  authenticateUser: async (req: Request): Promise<AuthenticatedUserRefresh> => {
     try {
       const validatedUser: UserSchema = await UserSchema_Joi.validateAsync(
         req.body,
@@ -96,14 +93,9 @@ export default {
         TokenKeyType.JWT_REFRESH_KEY,
       );
 
-      // Send back the refreshToken as a httponly cookie
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        maxAge: 15 * 24 * 60 * 60 * 1000,
-      });
-
       return {
         accessToken,
+        refreshToken,
         userId: user.id,
         username: user.username,
       };
@@ -113,9 +105,7 @@ export default {
   },
 
   // Called when user requests for a new access-token
-  refreshAccessToken: async (
-    req: Request,
-  ): Promise<RefreshAccessTokenReturnType> => {
+  refreshAccessToken: async (req: Request): Promise<AuthenticatedUser> => {
     try {
       // User must send the refresh token as http-only cookie
       if (!req.headers.cookie)
