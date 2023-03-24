@@ -15,13 +15,6 @@ routes.forEach((route) => {
   app.use(route[0], route[1]);
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({
-    status: 'success',
-    message: 'OK',
-  });
-});
-
 app.use(async (_: Request, __: Response, next: NextFunction) => {
   next(httpErrors.NotFound());
 });
