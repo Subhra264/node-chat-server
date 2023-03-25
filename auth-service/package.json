@@ -8,7 +8,8 @@
     "dev": "ts-node src/app.ts",
     "dev:grpc": "ts-node src/grpc/server.ts",
     "prettier": "npx prettier . --write",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "grpc:proto": "ts-node bin/compileProto.ts"
   },
   "keywords": [
     "jwt",
@@ -35,7 +36,6 @@
     "@types/node": "^18.15.3",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1",
-    "ts-proto": "^1.143.0",
     "typescript": "^5.0.2"
   }
 }
