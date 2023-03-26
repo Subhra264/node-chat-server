@@ -10,7 +10,7 @@ const PROTO_LOADER_PATH = path.join(
 );
 
 rimraf.sync(`${MODEL_DIR}/*`, {
-  glob: { ignore: [`${MODEL_DIR}/tsconfig.json`, `${MODEL_DIR}/.gitignore`] },
+  glob: { ignore: `${MODEL_DIR}/.gitignore` },
 });
 
 const protoConfig = [
