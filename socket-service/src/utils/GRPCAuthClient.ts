@@ -40,7 +40,7 @@ class GRPCAuthClient {
 
   public static get client() {
     if (!this.authClient) this.authClient = new GRPCAuthClient();
-    return this.authClient.client_;
+    return this.authClient;
   }
 }
 

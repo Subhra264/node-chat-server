@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import GRPCAuthClient from '../utils/GRPCAuthClient';
 
 class ChatService {
   private socket: Socket;
@@ -8,7 +9,9 @@ class ChatService {
     this.init();
   }
 
-  private init() {}
+  private init() {
+    GRPCAuthClient.client.validateToken(this.socket.handshake.auth.token);
+  }
 }
 
 export default ChatService;
