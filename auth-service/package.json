@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node src/app.ts",
-    "dev:grpc": "ts-node src/grpc/server.ts",
+    "dev:grpc": "ts-node src/grpcServer.ts",
     "prettier": "npx prettier . --write",
     "prisma:generate": "prisma generate",
     "grpc:proto": "ts-node bin/compileProto.ts"
