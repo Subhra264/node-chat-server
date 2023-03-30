@@ -4,6 +4,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { config } from 'dotenv';
 import GRPCAuthClient from './grpc/GRPCAuthClient';
+import authenticate from './middlewares/auth.middleware';
 
 config();
 
@@ -43,6 +44,7 @@ pubClient.on('connect', () => {
 const subClient = pubClient.duplicate();
 
 io.adapter(createAdapter(pubClient, subClient));
+io.use(authenticate);
 
 // TODO: Is async ok to use?
 io.on('connection', async (socket) => {});

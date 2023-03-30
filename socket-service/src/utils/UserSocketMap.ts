@@ -15,7 +15,7 @@ class UserSocketMap {
     this.socketMap[userId] = socketId;
   }
 
-  public static deleteUser(userId) {
+  public static deleteUser(userId: string) {
     delete this.socketMap[userId];
   }
 }

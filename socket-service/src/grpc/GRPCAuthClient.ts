@@ -55,7 +55,8 @@ class GRPCAuthClient {
         return reject(new Error('GRPC_CLIENT_NOT_READY'));
       this.client_.ValidateToken({ token }, (err, res) => {
         if (err) return reject(new Error(err.name));
-        if (!res) return reject(new Error('NO_RESPONSE'));
+        if (!res || res.status !== 'success')
+          return reject(new Error('NO_RESPONSE'));
         resolve(res);
       });
     });
