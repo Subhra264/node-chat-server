@@ -19,6 +19,7 @@
     "@socket.io/redis-adapter": "^8.1.0",
     "@types/redis": "^4.0.11",
     "redis": "^4.6.5",
+    "rimraf": "^4.4.1",
     "socket.io": "^4.5.4"
   },
   "devDependencies": {
