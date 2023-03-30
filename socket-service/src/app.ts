@@ -1,8 +1,9 @@
 import { createServer } from 'http';
-import { Server as SocketServer } from 'socket.io';
+import { SocketServer } from './utils/socketEvents';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { config } from 'dotenv';
+import GRPCAuthClient from './grpc/GRPCAuthClient';
 
 config();
 
@@ -15,42 +16,16 @@ if (!redisURI) {
   process.exit(5);
 }
 
-interface ServerToClientEvents {
-  // TODO: List down all the events expected
-  notification: () => void;
-}
-
-interface ClientToServerEvents {
-  // TODO: list down all client to server events expected
-  join_app: () => void;
-  join_group: () => void;
-  join_voice: () => void;
-
-  create_channel: () => void;
-  message_channel: () => void;
-
-  message_friend: () => void;
-}
-
-interface InterServerEvents {
-  // TODO: List down all inter server events expected
-}
-
-interface SocketData {
-  // TODO: Define all the required socket data
-}
-
 const httpServer = createServer();
-const io = new SocketServer<
-  ServerToClientEvents,
-  ClientToServerEvents,
-  InterServerEvents,
-  SocketData
->(httpServer, {
+const io = new SocketServer(httpServer, {
   cors: {
     origin: '*',
   },
 });
+
+const grpcAuth = GRPCAuthClient.client;
+// Load GRPC protobufs and set up client for auth grpc server
+grpcAuth.loadProto();
 
 const pubClient = createClient({
   url: redisURI,
