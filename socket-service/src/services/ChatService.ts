@@ -1,4 +1,5 @@
 import {
+  CreateChannelEvent,
   DirectMessage,
   GroupMessage,
   IoSocket,
@@ -25,10 +26,10 @@ class ChatService {
     socket.on('message_friend', async (msg) => this.messageFriend(socket, msg));
 
     socket.on('join_app', async () => this.joinApp(socket));
-    socket.on('join_group', async () => this.joinGroup(socket));
-    socket.on('join_voice', async () => this.joinVoice(socket));
+    socket.on('join_group', async (groupId) => this.joinGroup(socket, groupId));
+    socket.on('join_voice', async (groupId) => this.joinVoice(socket, groupId));
 
-    socket.on('create_channel', async () => this.createChannel(socket));
+    socket.on('create_channel', async (ev) => this.createChannel(socket, ev));
 
     socket.on('disconnect', async () => this.onDisconnect(socket));
 
@@ -59,19 +60,45 @@ class ChatService {
   }
 
   private async joinApp(socket: IoSocket) {
-    // TODO: Join App
+    // TODO: Is needed at all?
   }
 
-  private async joinGroup(socket: IoSocket) {
-    // TODO: Join Group
+  private async joinGroup(socket: IoSocket, groupId: string) {
+    // User must join the group through the REST API only
+    // After that is successful, then only this event should be triggered
+    // TODO: Get the rest of the group members and notify them
+    const socketIds = UserSocketMap.getSocketIdsForUsers([]);
+    this.io.to(socketIds).emit('new_member', {
+      userId: socket.userId as string,
+      username: socket.username as string,
+      groupId,
+    });
   }
 
-  private async joinVoice(socket: IoSocket) {
-    // TODO: Join Voice and notify group members
+  // For now, only one voice channel for each group
+  private async joinVoice(socket: IoSocket, groupId) {
+    // Since it is possible only when the socket connection is established,
+    // no involvement of REST APIs required and all can be handled volatilely
+    // TODO: If no existing Voice session, create one, and add this user
+    const socketIds = UserSocketMap.getSocketIdsForUsers([]);
+    this.io.to(socketIds).emit('joined_voice', {
+      userId: socket.userId as string,
+      username: socket.username as string,
+      groupId,
+    });
   }
 
-  private async createChannel(socket: IoSocket) {
-    // TODO: Create channel and notify group members
+  private async createChannel(socket: IoSocket, ev: CreateChannelEvent) {
+    // The channel must be previously created through the REST API
+    // After this is done, then only create_channel event should
+    // get triggered with the generated id
+    // TODO: Get the group members
+    const socketIds = UserSocketMap.getSocketIdsForUsers([]);
+    this.io.to(socketIds).emit('new_channel', {
+      userId: socket.userId as string,
+      username: socket.username as string,
+      ...ev,
+    });
   }
 
   private onDisconnect(socket: IoSocket) {

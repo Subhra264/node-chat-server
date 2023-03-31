@@ -1,4 +1,7 @@
 class UserSocketMap {
+  // Should use externally deployed key-value store to get the
+  // correct socketIds for distributed connections across nodes.
+  // For now, it can give socketIds of those connected to this node only
   private static socketMap: Record<string, string> = {};
 
   public static isUserPresent(userId: string) {
@@ -11,10 +14,11 @@ class UserSocketMap {
     return socketId || '';
   }
 
-  public static getSocketIdsForUsers(users: string[]) {
+  public static getSocketIdsForUsers(users: string[], exceptUser: string = '') {
     let socketIds: Array<string> = [];
     users.forEach((userId) => {
-      if (this.isUserPresent(userId)) socketIds.push(this.getSocketId(userId));
+      if (this.isUserPresent(userId) && userId !== exceptUser)
+        socketIds.push(this.getSocketId(userId));
     });
     return socketIds;
   }

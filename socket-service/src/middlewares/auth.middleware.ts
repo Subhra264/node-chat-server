@@ -9,6 +9,10 @@ export default async function authenticate(
   try {
     const token = socket.handshake.auth.token;
     const response = await GRPCAuthClient.client.validateToken(token);
+
+    if (!response.userId || !response.username)
+      throw new Error('AUTHENTICATION_ERROR');
+
     socket.userId = response.userId;
     socket.username = response.username;
     next();

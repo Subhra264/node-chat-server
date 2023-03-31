@@ -33,6 +33,20 @@ export interface NotificationGroupMessage extends GroupMessage {
   fromUserId: string;
 }
 
+export interface GroupEvent {
+  userId: string;
+  username: string;
+  groupId: string;
+}
+
+export interface NewMember extends GroupEvent {}
+
+export interface JoinedVoice extends GroupEvent {}
+
+export interface NewChannel extends GroupEvent {
+  channelName: string;
+  channelId: string;
+}
 // <<<<<<<<<<<<<<<<<<<<<<<<<<< ServerToClient <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 export interface ServerToClientEvents {
@@ -41,17 +55,18 @@ export interface ServerToClientEvents {
   notification_dm: (msg: NotificationDM) => void;
   notification_groupMessage: (msg: NotificationGroupMessage) => void;
 
-  new_channel: () => void;
-  joined_voice: () => void;
+  new_channel: (ev: NewChannel) => void;
+  new_member: (ev: NewMember) => void;
+  joined_voice: (ev: JoinedVoice) => void;
 }
 
 export interface ClientToServerEvents {
   // TODO: list down all client to server events expected
   join_app: () => void;
-  join_group: () => void;
-  join_voice: () => void;
+  join_group: (groupId: string) => void;
+  join_voice: (groupId: string) => void;
 
-  create_channel: () => void;
+  create_channel: (ev: CreateChannelEvent) => void;
   message_channel: (msg: GroupMessage) => void;
 
   message_friend: (msg: DirectMessage) => void;
