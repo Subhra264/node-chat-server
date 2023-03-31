@@ -11,6 +11,14 @@ class UserSocketMap {
     return socketId || '';
   }
 
+  public static getSocketIdsForUsers(users: string[]) {
+    let socketIds: Array<string> = [];
+    users.forEach((userId) => {
+      if (this.isUserPresent(userId)) socketIds.push(this.getSocketId(userId));
+    });
+    return socketIds;
+  }
+
   public static putSocket(userId: string, socketId: string) {
     this.socketMap[userId] = socketId;
   }

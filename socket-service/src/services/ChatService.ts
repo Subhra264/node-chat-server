@@ -1,5 +1,3 @@
-// import { Server } from 'socket.io';
-import GRPCAuthClient from '../grpc/GRPCAuthClient';
 import {
   DirectMessage,
   GroupMessage,
@@ -13,7 +11,10 @@ class ChatService {
 
   constructor(io: SocketServer) {
     this.io = io;
-    io.on('connection', async (socket) => this.initSocket(socket));
+  }
+
+  public init() {
+    this.io.on('connection', async (socket) => this.initSocket(socket));
     // io.on('disconnection', async socket => this.onDisconnect(socket));
   }
 
@@ -35,16 +36,26 @@ class ChatService {
   }
 
   private async messageChannel(socket: IoSocket, msg: GroupMessage) {
-    // TODO: Message in group
+    // TODO: Get group member ids
+    const socketIds = UserSocketMap.getSocketIdsForUsers([]);
+    this.io.to(socketIds).emit('notification_groupMessage', {
+      ...msg,
+      fromUserId: socket.userId as string,
+    });
+
+    // TODO: Save the message in group
   }
 
   private async messageFriend(socket: IoSocket, msg: DirectMessage) {
-    // TODO: Message Friend
-    const toSocketId = UserSocketMap.getSocketId(msg.toUserId);
-    this.io.to(toSocketId).emit('notification_dm', {
-      fromUserId: socket.userId as string,
-      text: msg.text,
-    });
+    if (UserSocketMap.isUserPresent(msg.toUserId)) {
+      const toSocketId = UserSocketMap.getSocketId(msg.toUserId);
+      this.io.to(toSocketId).emit('notification_dm', {
+        fromUserId: socket.userId as string,
+        text: msg.text,
+      });
+    }
+
+    // TODO: Save the msg to database through GRPC
   }
 
   private async joinApp(socket: IoSocket) {

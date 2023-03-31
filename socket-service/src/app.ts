@@ -5,6 +5,7 @@ import { createClient } from 'redis';
 import { config } from 'dotenv';
 import GRPCAuthClient from './grpc/GRPCAuthClient';
 import authenticate from './middlewares/auth.middleware';
+import ChatService from './services/ChatService';
 
 config();
 
@@ -46,8 +47,8 @@ const subClient = pubClient.duplicate();
 io.adapter(createAdapter(pubClient, subClient));
 io.use(authenticate);
 
-// TODO: Is async ok to use?
-io.on('connection', async (socket) => {});
+const ChatIO = new ChatService(io);
+ChatIO.init();
 
 httpServer.listen(PORT, () => {
   console.log('Listening on port', PORT);
