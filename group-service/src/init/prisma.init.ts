@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 class PrismaORM {
-  private static prisma_: undefined | PrismaClient;
+  private static prisma_: PrismaClient;
 
   static get() {
     if (!this.prisma_) this.prisma_ = new PrismaClient();
