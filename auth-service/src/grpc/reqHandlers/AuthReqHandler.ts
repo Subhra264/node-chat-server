@@ -20,6 +20,7 @@ export default {
       )) as unknown as AuthPayload;
 
       res(null, {
+        status: 'success',
         userId: payload.userId,
         username: payload.username,
       });
