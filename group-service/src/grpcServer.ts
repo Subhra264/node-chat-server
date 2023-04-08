@@ -33,7 +33,7 @@ const proto = loadPackageDefinition(packageDef) as unknown as ProtoGrpcType;
 
 server.addService(proto.group.Group.service, {
   getMembers: GroupReqHandlers.getMembersHandler,
-  doesGroupExist: GroupReqHandlers.doesExist,
+  doesGroupExist: GroupReqHandlers.doesGroupExist,
 });
 
 server.bindAsync(
