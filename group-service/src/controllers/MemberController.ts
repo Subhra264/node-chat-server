@@ -1,11 +1,5 @@
-import HttpErrors from '../errors/http-errors';
 import MemberService from '../services/MemberService';
-import { verifyToken, TokenKeyType } from '../utils/jwt';
 import { AuthenticatedRequest } from '../middlewares/AuthMiddleware';
-
-interface GroupInvitationToken {
-  invitationToken: string;
-}
 
 export default {
   // Returns all the members of the requested Group
