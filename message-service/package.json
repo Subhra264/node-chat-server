@@ -1,0 +1,27 @@
+{
+  "name": "message-service",
+  "version": "1.0.0",
+  "description": "Message service for node-chat-server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:grpc": "ts-node src/grpcServer.ts",
+    "load-proto": "ts-node bin/compileProto.ts"
+  },
+  "keywords": [
+    "message"
+  ],
+  "author": "Subhradeep Chakraborty",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.13",
+    "@grpc/proto-loader": "^0.7.6",
+    "rimraf": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
