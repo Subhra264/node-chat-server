@@ -15,4 +15,16 @@ model Group {
   name String
   description String? @default("")
   image String? @default("")
+  createdAt DateTime @default(now())
+  members GroupMember[]
+}
+
+model GroupMember {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  group Group @relation(fields: [groupId], references: [id])
+  groupId String @db.ObjectId
+  userId String
+  joinedAt DateTime @default(now())
+
+  @@index([groupId])
 }
