@@ -1,22 +1,38 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import GroupController from '../../controllers/GroupController';
 import { AuthenticatedRequest } from '../../middlewares/AuthMiddleware';
 import convertToHttpErrorFrom from '../../errors/errorsToHttpError';
+import MemberController from '../../controllers/MemberController';
 
-const GroupRouter = Router();
+const MemberRouter = Router();
 
-// TODO: Implement all the necessary routes
-
-GroupRouter.get(
-  '/find',
+MemberRouter.get(
+  '/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const groups = await GroupController.getGroups(
+      const members = await MemberController.getGroupMembers(
+        req as AuthenticatedRequest,
+      );
+
+      res.json({
+        status: 'success',
+        message: members,
+      });
+    } catch (err) {
+      next(convertToHttpErrorFrom(err));
+    }
+  },
+);
+
+MemberRouter.post(
+  '/join',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const record = await MemberController.joinGroup(
         req as AuthenticatedRequest,
       );
       res.json({
         status: 'success',
-        message: groups,
+        message: record,
       });
     } catch (err) {
       next(convertToHttpErrorFrom(err));
@@ -24,31 +40,16 @@ GroupRouter.get(
   },
 );
 
-GroupRouter.get(
-  '/find/:groupId',
+MemberRouter.post(
+  '/invite',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const group = GroupController.getGroup(req as AuthenticatedRequest);
-      res.json({
-        status: 'success',
-        message: group,
-      });
-    } catch (err) {
-      next(convertToHttpErrorFrom(err));
-    }
-  },
-);
-
-GroupRouter.post(
-  '/create',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const newGroup = await GroupController.createGroup(
+      const invitation = await MemberController.createInvitationToken(
         req as AuthenticatedRequest,
       );
       res.json({
         status: 'success',
-        message: newGroup,
+        message: invitation,
       });
     } catch (err) {
       next(convertToHttpErrorFrom(err));
@@ -56,4 +57,4 @@ GroupRouter.post(
   },
 );
 
-export default GroupRouter;
+export default MemberRouter;

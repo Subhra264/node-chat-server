@@ -1,4 +1,3 @@
-import convertToHttpErrorFrom from '../errors/errorsToHttpError';
 import HttpErrors from '../errors/http-errors';
 import GroupService from '../services/GroupService';
 import { verifyToken, TokenKeyType } from '../utils/jwt';
@@ -18,9 +17,18 @@ interface GroupInvitationToken {
 export default {
   createGroup: async (req: AuthenticatedRequest) => {
     try {
-      return GroupService.createGroup(req.body, req.userId);
+      return await GroupService.createGroup(req.body, req.userId);
     } catch (err) {
-      throw convertToHttpErrorFrom(err);
+      throw err;
+    }
+  },
+
+  getGroup: async (req: AuthenticatedRequest) => {
+    try {
+      return await GroupService.getGroup(req.params.groupId);
+    } catch (err) {
+      if ((err as any).code === 'P2025') throw HttpErrors.NotFound();
+      throw err;
     }
   },
 
@@ -29,44 +37,7 @@ export default {
     try {
       return await GroupService.getGroups(req.userId);
     } catch (err) {
-      throw convertToHttpErrorFrom(err);
-    }
-  },
-
-  // Returns all the members of the requested Group
-  getGroupMembers: async (req: AuthenticatedRequest) => {
-    try {
-      // Assuming that the groupId is valid
-      return await GroupService.getMembers(req.body.groupId);
-    } catch (err) {
-      throw convertToHttpErrorFrom(err);
-    }
-  },
-
-  createGroupInvitationToken: async (req: AuthenticatedRequest) => {
-    try {
-      return await GroupService.createInvitation(req.body.groupId, req.userId);
-    } catch (err) {
-      throw convertToHttpErrorFrom(err);
-    }
-  },
-
-  joinGroup: async (req: AuthenticatedRequest): Promise<void> => {
-    try {
-      const { encryptedGroupId } = req.body;
-      if (!encryptedGroupId) throw HttpErrors.BadRequest();
-
-      const payload = await verifyToken(
-        encryptedGroupId,
-        TokenKeyType.JWT_GROUP_INVITATION_KEY,
-      );
-
-      return await GroupService.joinGroup(
-        payload.groupId as string,
-        req.userId,
-      );
-    } catch (err) {
-      throw convertToHttpErrorFrom(err);
+      throw err;
     }
   },
 };

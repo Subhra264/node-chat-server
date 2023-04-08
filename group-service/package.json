@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node src/app.ts",
     "dev:grpc": "ts-node src/grpcServer.ts",
-    "prisma:generate": "prisma generate --schema=prisma/Group.prisma",
+    "prisma:generate": "prisma generate",
     "compile-proto": "ts-node bin/compileProto.ts"
   },
   "keywords": [],

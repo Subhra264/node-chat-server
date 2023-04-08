@@ -15,8 +15,9 @@ model Group {
   name String
   description String? @default("")
   image String? @default("")
-  createdAt DateTime @default(now())
   members GroupMember[]
+  channels Channel[]
+  createdAt DateTime @default(now())
 }
 
 model GroupMember {
@@ -26,5 +27,20 @@ model GroupMember {
   userId String
   joinedAt DateTime @default(now())
 
-  @@index([groupId])
+  @@index([groupId, userId])
+}
+
+model Channel {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  group Group @relation(fields: [groupId], references: [id])
+  groupId String @db.ObjectId
+  name String
+  type ChannelType
+  default Boolean
+  createdAt DateTime @default(now())
+}
+
+enum ChannelType {
+  TEXT
+  VOICE
 }
