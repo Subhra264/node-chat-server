@@ -37,17 +37,17 @@ class ChatService {
   }
 
   private async messageChannel(socket: IoSocket, msg: GroupMessage) {
+    // TODO: Save the message in group
     // TODO: Get group member ids
     const socketIds = UserSocketMap.getSocketIdsForUsers([]);
     this.io.to(socketIds).emit('notification_groupMessage', {
       ...msg,
       fromUserId: socket.userId as string,
     });
-
-    // TODO: Save the message in group
   }
 
   private async messageFriend(socket: IoSocket, msg: DirectMessage) {
+    // TODO: Save the msg to database through GRPC
     if (UserSocketMap.isUserPresent(msg.toUserId)) {
       const toSocketId = UserSocketMap.getSocketId(msg.toUserId);
       this.io.to(toSocketId).emit('notification_dm', {
@@ -55,8 +55,6 @@ class ChatService {
         text: msg.text,
       });
     }
-
-    // TODO: Save the msg to database through GRPC
   }
 
   private async joinApp(socket: IoSocket) {

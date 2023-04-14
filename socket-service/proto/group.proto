@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package group;
+
+service Group {
+    rpc getMembers(MembersRequest) returns (MembersResponse) {};
+    rpc doesGroupExist(GroupExistRequest) returns (GroupExistResponse) {};
+}
+
+message MembersRequest {
+    required string groupId = 1;
+}
+
+message MembersResponse {
+    required string status = 1;
+    repeated string members = 2;
+}
+
+// Similar to MembersRequest but created for future extension
+message GroupExistRequest {
+    required string groupId = 1;
+}
+
+message GroupExistResponse {
+    required string status = 1;
+    bool doesExist = 2;
+}

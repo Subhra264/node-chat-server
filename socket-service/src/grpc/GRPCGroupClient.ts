@@ -6,8 +6,8 @@ import { AuthClient } from '../models/auth/Auth';
 import { ValidateResponse__Output } from '../models/auth/ValidateResponse';
 import { loaderOptions } from './GRPCClient';
 
-const PROTO_FILE = '../proto/auth.proto';
-const GRPC_AUTH_SERVER_PORT = process.env.GRPC_AUTH_SERVER_PORT || 50051;
+const PROTO_FILE = '../proto/group.proto';
+const GRPC_GROUP_SERVER_PORT = process.env.GRPC_GROUP_SERVER_PORT || 51051;
 
 class GRPCAuthClient {
   private client_: AuthClient | null;
@@ -30,7 +30,7 @@ class GRPCAuthClient {
     ) as unknown as ProtoGrpcType;
 
     this.client_ = new proto.auth.Auth(
-      `0.0.0.0:${GRPC_AUTH_SERVER_PORT}`,
+      `0.0.0.0:${GRPC_GROUP_SERVER_PORT}`,
       grpc.credentials.createInsecure(),
     );
 
@@ -39,19 +39,6 @@ class GRPCAuthClient {
     this.client_.waitForReady(deadline, (err) => {
       if (err) return console.log('Error setting up the GRPC client...', err);
       this.isReady = true;
-    });
-  }
-
-  public validateToken(token: string): Promise<ValidateResponse__Output> {
-    return new Promise((resolve, reject) => {
-      if (!this.client_ || !this.isReady)
-        return reject(new Error('GRPC_CLIENT_NOT_READY'));
-      this.client_.ValidateToken({ token }, (err, res) => {
-        if (err) return reject(new Error(err.name));
-        if (!res || res.status !== 'success')
-          return reject(new Error('NO_RESPONSE'));
-        resolve(res);
-      });
     });
   }
 
