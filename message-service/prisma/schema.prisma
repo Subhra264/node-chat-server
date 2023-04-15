@@ -33,6 +33,6 @@ model FriendMessage {
   senderId String
   receiverId String
   message String
-  encKey String
+  // encKey String
   timestamp DateTime @default(now())
 }

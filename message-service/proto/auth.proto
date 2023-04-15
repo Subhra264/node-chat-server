@@ -3,16 +3,16 @@ syntax = "proto3";
 package auth;
 
 service Auth {
-    rpc ValidateToken(ValidateRequest) returns (ValidateResponse) {}
+  rpc ValidateToken(ValidateRequest) returns (ValidateResponse) {}
 }
 
 message ValidateRequest {
-    string token = 1;
+  string token = 1;
 }
 
 message ValidateResponse {
-    string status = 1;
-    optional string message = 2;
-    optional string userId = 3;
-    optional string username = 4;
+  string status = 1;
+  optional string message = 2;
+  optional string userId = 3;
+  optional string username = 4;
 }
