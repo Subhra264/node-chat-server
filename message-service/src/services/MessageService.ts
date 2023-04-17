@@ -3,6 +3,20 @@ import PrismaORM from '../init/prisma.init';
 const prisma = PrismaORM.get();
 const PAGE_SIZE = 20;
 
+interface AddGroupMessageArgs {
+  userId: string;
+  groupId: string;
+  channelId: string;
+  message: string;
+  encKey: string;
+}
+
+interface AddFriendMessageArgs {
+  senderId: string;
+  receiverId: string;
+  message: string;
+}
+
 export default {
   getChannelMessages: async (
     groupId: string,
@@ -72,6 +86,26 @@ export default {
       });
 
       return selfMessage;
+    } catch (err) {
+      throw err;
+    }
+  },
+  addGroupMessage: async (data: AddGroupMessageArgs) => {
+    try {
+      const groupMessage = await prisma.groupMessage.create({
+        data,
+      });
+      return groupMessage;
+    } catch (err) {
+      throw err;
+    }
+  },
+  addFriendMessage: async (data: AddFriendMessageArgs) => {
+    try {
+      const friendMessage = await prisma.friendMessage.create({
+        data,
+      });
+      return friendMessage;
     } catch (err) {
       throw err;
     }
