@@ -3,20 +3,20 @@ syntax = "proto3";
 package message;
 
 service Message {
-  rpc saveFriendMessage(FriendMessageRequest) returns FriendMessageResponse ();
-  rpc saveGroupMessage(GroupMessageRequest) returns GroupMessageResponse ();
+  rpc saveFriendMessage(FriendMessageRequest) returns (FriendMessageResponse) {};
+  rpc saveGroupMessage(GroupMessageRequest) returns (GroupMessageResponse) {};
 }
 
 message FriendMessageRequest {
   string senderId = 1;
   string recipentId = 2;
   string message = 3;
-  string optional encKey = 4; // Optional for now
+  optional string encKey = 4; // Optional for now
 }
 
 message FriendMessageResponse {
   string status = 1;
-  string optional message = 2;
+  optional string message = 2;
 }
 
 message GroupMessageRequest {
@@ -24,10 +24,10 @@ message GroupMessageRequest {
   string channelId = 2;
   string userId = 3;
   string message = 4;
-  string optional encKey = 5; // optional for now
+  optional string encKey = 5; // optional for now
 }
 
 message GroupMessageResponse {
   string status = 1;
-  string optional message = 2;
+  optional string message = 2;
 }

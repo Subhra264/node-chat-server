@@ -20,6 +20,7 @@ const protoConfig = [
   '--grpcLib=@grpc/grpc-js',
   `proto/auth.proto`,
   'proto/group.proto',
+  'proto/message.proto',
 ];
 
 execSync(`${PROTO_LOADER_PATH} ${protoConfig.join(' ')}`);

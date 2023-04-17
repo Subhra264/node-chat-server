@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prisma:generate": "prisma generate",
     "start:grpc": "ts-node src/grpcServer.ts",
     "load-proto": "ts-node bin/compileProto.ts"
   },

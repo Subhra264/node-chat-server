@@ -2,6 +2,8 @@ import Express, { NextFunction, Request, Response } from 'express';
 import AuthMiddleware from './middlewares/AuthMiddleware';
 import routers from './routes';
 import HttpErrors, { HttpError } from './errors/http-errors';
+import GRPCAuthClient from './grpc/GRPCAuthClient';
+import GRPCGroupClient from './grpc/GRPCGroupClient';
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv');
@@ -9,6 +11,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = Express();
 const PORT = process.env.PORT || 9000;
+
+GRPCAuthClient.client.loadProto();
+GRPCGroupClient.client.loadProto();
 
 app.use(Express.json());
 app.use(AuthMiddleware);

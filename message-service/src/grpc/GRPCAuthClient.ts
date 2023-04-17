@@ -1,6 +1,6 @@
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
-import path, { resolve } from 'path';
+import path from 'path';
 import { ProtoGrpcType } from '../models/auth';
 import { AuthClient } from '../models/auth/Auth';
 import { ValidateResponse__Output } from '../models/auth/ValidateResponse';
