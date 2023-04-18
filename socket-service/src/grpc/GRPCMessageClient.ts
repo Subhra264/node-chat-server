@@ -2,16 +2,16 @@ import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 import path from 'path';
 import { loaderOptions } from './GRPCClient';
-import { GroupClient } from './models/group/Group';
-import { ProtoGrpcType } from './models/group';
+import { MessageClient } from './models/message/Message';
+import { ProtoGrpcType } from './models/message';
 
-const PROTO_FILE = '../proto/group.proto';
-const GRPC_GROUP_SERVER_PORT = process.env.GRPC_GROUP_SERVER_PORT || 51051;
+const PROTO_FILE = '../proto/message.proto';
+const GRPC_MESSAGE_SERVER_PORT = process.env.GRPC_GROUP_SERVER_PORT || 52051;
 
-class GRPCGroupClient {
-  private grpcClient: GroupClient | null;
+class GRPCMessageClient {
+  private grpcClient: MessageClient | null;
   private isReady: boolean;
-  private static client_: GRPCGroupClient;
+  private static client_: GRPCMessageClient;
 
   private constructor() {
     this.grpcClient = null;
@@ -30,7 +30,7 @@ class GRPCGroupClient {
       ) as unknown as ProtoGrpcType;
 
       this.grpcClient = new proto.group.Group(
-        `0.0.0.0:${GRPC_GROUP_SERVER_PORT}`,
+        `0.0.0.0:${GRPC_MESSAGE_SERVER_PORT}`,
         grpc.credentials.createInsecure(),
       );
 
@@ -44,19 +44,13 @@ class GRPCGroupClient {
   }
 
   public static get client() {
-    if (!this.client_) this.client_ = new GRPCGroupClient();
+    if (!this.client_) this.client_ = new GRPCMessageClient();
     return this.client_;
   }
 
   private isConnected() {
     return this.isReady && this.grpcClient;
   }
-
-  public async getMembers() {}
-
-  public async doesGroupExist() {
-    return true;
-  }
 }
 
-export default GRPCGroupClient;
+export default GRPCMessageClient;

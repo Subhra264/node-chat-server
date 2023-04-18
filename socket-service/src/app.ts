@@ -6,6 +6,8 @@ import { config } from 'dotenv';
 import GRPCAuthClient from './grpc/GRPCAuthClient';
 import authenticate from './middlewares/auth.middleware';
 import ChatService from './services/ChatService';
+import GRPCGroupClient from './grpc/GRPCGroupClient';
+import GRPCMessageClient from './grpc/GRPCMessageClient';
 
 config();
 
@@ -25,9 +27,9 @@ const io = new SocketServer(httpServer, {
   },
 });
 
-const grpcAuth = GRPCAuthClient.client;
-// Load GRPC protobufs and set up client for auth grpc server
-grpcAuth.loadProto();
+GRPCAuthClient.client.loadProto();
+GRPCGroupClient.client.loadProto();
+GRPCMessageClient.client.loadProto();
 
 const pubClient = createClient({
   url: redisURI,
