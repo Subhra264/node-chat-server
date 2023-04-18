@@ -24,6 +24,7 @@ export default {
     page: number,
   ) => {
     try {
+      // TODO: Check if the user is member of the group
       const messages = await prisma.groupMessage.findMany({
         orderBy: [{ timestamp: 'desc' }],
         where: {
@@ -92,6 +93,7 @@ export default {
   },
   addGroupMessage: async (data: AddGroupMessageArgs) => {
     try {
+      // TODO: Check if the group exists and if the user is a member
       const groupMessage = await prisma.groupMessage.create({
         data,
       });
@@ -102,6 +104,7 @@ export default {
   },
   addFriendMessage: async (data: AddFriendMessageArgs) => {
     try {
+      // TODO: Check if the friend exists
       const friendMessage = await prisma.friendMessage.create({
         data,
       });

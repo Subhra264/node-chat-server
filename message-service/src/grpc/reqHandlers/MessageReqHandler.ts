@@ -1,17 +1,28 @@
 import grpc from '@grpc/grpc-js';
+import MessageService from '../../services/MessageService';
+import { FriendMessageRequest__Output } from '../models/message/FriendMessageRequest';
+import { FriendMessageResponse } from '../models/message/FriendMessageResponse';
+import { GroupMessageRequest__Output } from '../models/message/GroupMessageRequest';
+import { GroupMessageResponse } from '../models/message/GroupMessageResponse';
 
 export default {
-  getMembersHandler: async (
-    req: grpc.ServerUnaryCall<MembersRequest__Output, MembersResponse>,
-    res: grpc.sendUnaryData<MembersResponse>,
+  saveFriendMessage: async (
+    req: grpc.ServerUnaryCall<
+      FriendMessageRequest__Output,
+      FriendMessageResponse
+    >,
+    res: grpc.sendUnaryData<FriendMessageResponse>,
   ) => {
     try {
-      const members = await MemberService.getMembers(
-        req.request.groupId as string,
-      );
+      const message = await MessageService.addFriendMessage({
+        senderId: req.request.senderId as string,
+        receiverId: req.request.recipentId as string,
+        message: req.request.message as string,
+        // encKey: req.request.encKey || ''
+      });
       res(null, {
         status: 'success',
-        members,
+        message: message.timestamp.toISOString(),
       });
     } catch (err) {
       res({
@@ -20,16 +31,24 @@ export default {
       });
     }
   },
-  doesGroupExist: async (
-    req: grpc.ServerUnaryCall<GroupExistRequest__Output, GroupExistResponse>,
-    res: grpc.sendUnaryData<GroupExistResponse>,
+  saveGroupMessage: async (
+    req: grpc.ServerUnaryCall<
+      GroupMessageRequest__Output,
+      GroupMessageResponse
+    >,
+    res: grpc.sendUnaryData<GroupMessageResponse>,
   ) => {
     try {
-      const group = await GroupService.getGroup(req.request.groupId as string);
-
+      const groupMessage = await MessageService.addGroupMessage({
+        groupId: req.request.groupId as string,
+        channelId: req.request.channelId as string,
+        userId: req.request.userId as string,
+        message: req.request.message as string,
+        encKey: req.request.encKey || '',
+      });
       res(null, {
         status: 'success',
-        doesExist: group ? true : false,
+        message: groupMessage.timestamp.toISOString(),
       });
     } catch (err) {
       res({

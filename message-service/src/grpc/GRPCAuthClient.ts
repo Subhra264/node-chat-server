@@ -1,9 +1,9 @@
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 import path from 'path';
-import { ProtoGrpcType } from '../models/auth';
-import { AuthClient } from '../models/auth/Auth';
-import { ValidateResponse__Output } from '../models/auth/ValidateResponse';
+import { ProtoGrpcType } from './models/auth';
+import { AuthClient } from './models/auth/Auth';
+import { ValidateResponse__Output } from './models/auth/ValidateResponse';
 import { loaderOptions } from './GRPCClient';
 
 const PROTO_FILE = '../proto/auth.proto';
@@ -20,26 +20,28 @@ class GRPCAuthClient {
   }
 
   public loadProto() {
-    const packageDef = protoLoader.loadSync(
-      path.resolve(__dirname, PROTO_FILE),
-      loaderOptions,
-    );
+    if (!this.client_) {
+      const packageDef = protoLoader.loadSync(
+        path.resolve(__dirname, PROTO_FILE),
+        loaderOptions,
+      );
 
-    const proto = grpc.loadPackageDefinition(
-      packageDef,
-    ) as unknown as ProtoGrpcType;
+      const proto = grpc.loadPackageDefinition(
+        packageDef,
+      ) as unknown as ProtoGrpcType;
 
-    this.client_ = new proto.auth.Auth(
-      `0.0.0.0:${GRPC_AUTH_SERVER_PORT}`,
-      grpc.credentials.createInsecure(),
-    );
+      this.client_ = new proto.auth.Auth(
+        `0.0.0.0:${GRPC_AUTH_SERVER_PORT}`,
+        grpc.credentials.createInsecure(),
+      );
 
-    const deadline = new Date();
-    deadline.setSeconds(deadline.getSeconds() + 1);
-    this.client_.waitForReady(deadline, (err) => {
-      if (err) return console.log('Error setting up the GRPC client...', err);
-      this.isReady = true;
-    });
+      const deadline = new Date();
+      deadline.setSeconds(deadline.getSeconds() + 1);
+      this.client_.waitForReady(deadline, (err) => {
+        if (err) return console.log('Error setting up the GRPC client...', err);
+        this.isReady = true;
+      });
+    }
   }
 
   public validateToken(token: string): Promise<ValidateResponse__Output> {

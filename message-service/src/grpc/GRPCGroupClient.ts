@@ -2,12 +2,14 @@ import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 import path from 'path';
 import { loaderOptions } from './GRPCClient';
+import { GroupClient } from './models/group/Group';
+import { ProtoGrpcType } from './models/group';
 
 const PROTO_FILE = '../proto/group.proto';
 const GRPC_GROUP_SERVER_PORT = process.env.GRPC_GROUP_SERVER_PORT || 51051;
 
 class GRPCGroupClient {
-  private grpcClient: AuthClient | null;
+  private grpcClient: GroupClient | null;
   private isReady: boolean;
   private static client_: GRPCGroupClient;
 
@@ -17,26 +19,28 @@ class GRPCGroupClient {
   }
 
   public loadProto() {
-    const packageDef = protoLoader.loadSync(
-      path.resolve(__dirname, PROTO_FILE),
-      loaderOptions,
-    );
+    if (!this.grpcClient) {
+      const packageDef = protoLoader.loadSync(
+        path.resolve(__dirname, PROTO_FILE),
+        loaderOptions,
+      );
 
-    const proto = grpc.loadPackageDefinition(
-      packageDef,
-    ) as unknown as ProtoGrpcType;
+      const proto = grpc.loadPackageDefinition(
+        packageDef,
+      ) as unknown as ProtoGrpcType;
 
-    this.grpcClient = new proto.auth.Auth(
-      `0.0.0.0:${GRPC_GROUP_SERVER_PORT}`,
-      grpc.credentials.createInsecure(),
-    );
+      this.grpcClient = new proto.group.Group(
+        `0.0.0.0:${GRPC_GROUP_SERVER_PORT}`,
+        grpc.credentials.createInsecure(),
+      );
 
-    const deadline = new Date();
-    deadline.setSeconds(deadline.getSeconds() + 1);
-    this.grpcClient.waitForReady(deadline, (err) => {
-      if (err) return console.log('Error setting up the GRPC client...', err);
-      this.isReady = true;
-    });
+      const deadline = new Date();
+      deadline.setSeconds(deadline.getSeconds() + 1);
+      this.grpcClient.waitForReady(deadline, (err) => {
+        if (err) return console.log('Error setting up the GRPC client...', err);
+        this.isReady = true;
+      });
+    }
   }
 
   public static get client() {
