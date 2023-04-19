@@ -29,7 +29,7 @@ class GRPCMessageClient {
         packageDef,
       ) as unknown as ProtoGrpcType;
 
-      this.grpcClient = new proto.group.Group(
+      this.grpcClient = new proto.message.Message(
         `0.0.0.0:${GRPC_MESSAGE_SERVER_PORT}`,
         grpc.credentials.createInsecure(),
       );

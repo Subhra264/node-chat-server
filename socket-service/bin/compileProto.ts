@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 
 const PROTO_DIR = path.join(__dirname, '../proto');
-const MODEL_DIR = path.join(__dirname, '../src/models');
+const MODEL_DIR = path.join(__dirname, '../src/grpc/models');
 const PROTO_LOADER_PATH = path.join(
   __dirname,
   '../node_modules/.bin/proto-loader-gen-types',
@@ -19,6 +19,8 @@ const protoConfig = [
   `--outDir=${MODEL_DIR}`,
   '--grpcLib=@grpc/grpc-js',
   `proto/auth.proto`,
+  `proto/group.proto`,
+  `proto/message.proto`,
 ];
 
 execSync(`${PROTO_LOADER_PATH} ${protoConfig.join(' ')}`);

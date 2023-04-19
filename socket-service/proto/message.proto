@@ -17,7 +17,6 @@ message FriendMessageRequest {
 message FriendMessageResponse {
   string status = 1;
   optional string message = 2;
-  optional date savedAt = 3;
 }
 
 message GroupMessageRequest {
