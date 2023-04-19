@@ -1,4 +1,5 @@
 import GRPCGroupClient from '../grpc/GRPCGroupClient';
+import GRPCMessageClient from '../grpc/GRPCMessageClient';
 import {
   CreateChannelEvent,
   DirectMessage,
@@ -41,8 +42,18 @@ class ChatService {
     socket: IoSocket,
     { tempId, ...msg }: GroupMessage,
   ) {
-    // TODO: Save the message in group
     try {
+      const messageRes = await GRPCMessageClient.client.saveGroupMessage({
+        groupId: msg.groupId,
+        channelId: msg.textChannel,
+        message: msg.text,
+        userId: socket.userId,
+      });
+      socket.emit('group_message_saved', {
+        tempId,
+        timestamp: messageRes.message as string,
+        ...msg,
+      });
       const res = await GRPCGroupClient.client.getMembers(msg.groupId);
       const socketIds = UserSocketMap.getSocketIdsForUsers(res.members || []);
       this.io.to(socketIds).emit('notification_groupMessage', {
@@ -51,18 +62,30 @@ class ChatService {
       });
     } catch (err) {
       console.log('Error saving message', err);
-      socket.emit('message_not_saved', { tempId, ...msg });
+      socket.emit('group_message_not_saved', { tempId, ...msg });
     }
   }
 
   private async messageFriend(socket: IoSocket, msg: DirectMessage) {
-    // TODO: Save the msg to database through GRPC
-    if (UserSocketMap.isUserPresent(msg.toUserId)) {
-      const toSocketId = UserSocketMap.getSocketId(msg.toUserId);
-      this.io.to(toSocketId).emit('notification_dm', {
-        fromUserId: socket.userId as string,
-        text: msg.text,
+    try {
+      const messageRes = await GRPCMessageClient.client.saveFriendMessage({
+        senderId: socket.userId,
+        recipentId: msg.toUserId,
+        message: msg.text,
       });
+      socket.emit('friend_message_saved', {
+        timestamp: messageRes.message as string,
+        ...msg,
+      });
+      if (UserSocketMap.isUserPresent(msg.toUserId)) {
+        const toSocketId = UserSocketMap.getSocketId(msg.toUserId);
+        this.io.to(toSocketId).emit('notification_dm', {
+          fromUserId: socket.userId as string,
+          text: msg.text,
+        });
+      }
+    } catch (err) {
+      socket.emit('friend_message_not_saved', msg);
     }
   }
 

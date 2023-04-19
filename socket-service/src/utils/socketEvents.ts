@@ -61,7 +61,10 @@ export interface ServerToClientEvents {
   joined_voice: (ev: JoinedVoice) => void;
 
   // Response events
-  message_not_saved: (ev: GroupMessage) => void;
+  group_message_not_saved: (ev: GroupMessage) => void;
+  group_message_saved: (ev: GroupMessage & { timestamp: string }) => void;
+  friend_message_not_saved: (ev: DirectMessage) => void;
+  friend_message_saved: (ev: DirectMessage & { timestamp: string }) => void;
 }
 
 export interface ClientToServerEvents {
