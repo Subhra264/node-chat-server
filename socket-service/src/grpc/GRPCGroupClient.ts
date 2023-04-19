@@ -1,9 +1,15 @@
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
-import path from 'path';
-import { loaderOptions } from './GRPCClient';
+import path, { resolve } from 'path';
+import {
+  GRPC_CLIENT_NOT_READY,
+  GRPC_NO_RESPONSE,
+  loaderOptions,
+} from './GRPCClient';
 import { GroupClient } from './models/group/Group';
 import { ProtoGrpcType } from './models/group';
+import { MembersResponse__Output } from './models/group/MembersResponse';
+import { GroupExistResponse__Output } from './models/group/GroupExistResponse';
 
 const PROTO_FILE = '../proto/group.proto';
 const GRPC_GROUP_SERVER_PORT = process.env.GRPC_GROUP_SERVER_PORT || 51051;
@@ -52,10 +58,46 @@ class GRPCGroupClient {
     return this.isReady && this.grpcClient;
   }
 
-  public async getMembers() {}
+  public async getMembers(groupId: string) {
+    return new Promise(
+      (resolve: (data: MembersResponse__Output) => void, reject) => {
+        if (!this.isConnected()) {
+          return reject(new Error(GRPC_CLIENT_NOT_READY));
+        }
+        this.grpcClient?.getMembers(
+          {
+            groupId,
+          },
+          (err, data) => {
+            if (err) return reject(new Error(err.message));
+            if (!data || data.status !== 'success')
+              return reject(new Error(GRPC_NO_RESPONSE));
+            resolve(data);
+          },
+        );
+      },
+    );
+  }
 
-  public async doesGroupExist() {
-    return true;
+  public async doesGroupExist(groupId: string) {
+    return new Promise(
+      (resolve: (data: GroupExistResponse__Output) => void, reject) => {
+        if (!this.isConnected()) {
+          return reject(new Error(GRPC_CLIENT_NOT_READY));
+        }
+        this.grpcClient?.doesGroupExist(
+          {
+            groupId,
+          },
+          (err, data) => {
+            if (err) return reject(new Error(err.message));
+            if (!data || data.status !== 'success')
+              return reject(new Error(GRPC_NO_RESPONSE));
+            resolve(data);
+          },
+        );
+      },
+    );
   }
 }
 

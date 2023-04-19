@@ -4,7 +4,11 @@ import path, { resolve } from 'path';
 import { ProtoGrpcType } from './models/auth';
 import { AuthClient } from './models/auth/Auth';
 import { ValidateResponse__Output } from './models/auth/ValidateResponse';
-import { loaderOptions } from './GRPCClient';
+import {
+  GRPC_CLIENT_NOT_READY,
+  GRPC_NO_RESPONSE,
+  loaderOptions,
+} from './GRPCClient';
 
 const PROTO_FILE = '../proto/auth.proto';
 const GRPC_AUTH_SERVER_PORT = process.env.GRPC_AUTH_SERVER_PORT || 50051;
@@ -45,11 +49,11 @@ class GRPCAuthClient {
   public validateToken(token: string): Promise<ValidateResponse__Output> {
     return new Promise((resolve, reject) => {
       if (!this.client_ || !this.isReady)
-        return reject(new Error('GRPC_CLIENT_NOT_READY'));
+        return reject(new Error(GRPC_CLIENT_NOT_READY));
       this.client_.ValidateToken({ token }, (err, res) => {
         if (err) return reject(new Error(err.name));
         if (!res || res.status !== 'success')
-          return reject(new Error('NO_RESPONSE'));
+          return reject(new Error(GRPC_NO_RESPONSE));
         resolve(res);
       });
     });

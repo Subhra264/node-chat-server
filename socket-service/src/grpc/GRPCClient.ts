@@ -7,3 +7,6 @@ export const loaderOptions: Options = {
   defaults: true,
   oneofs: true,
 };
+
+export const GRPC_CLIENT_NOT_READY = 'GRPC_CLIENT_NOT_READY';
+export const GRPC_NO_RESPONSE = 'GRPC_NO_RESPONSE';

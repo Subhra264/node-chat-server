@@ -9,10 +9,12 @@ interface Message {
 export interface GroupMessage extends Message {
   groupId: string;
   textChannel: string;
+  tempId: string;
 }
 
 export interface DirectMessage extends Message {
   toUserId: string;
+  tempId: string;
 }
 
 export interface CreateChannelEvent {
@@ -29,9 +31,9 @@ export interface NotificationDM extends Message {
   fromUserId: string;
 }
 
-export interface NotificationGroupMessage extends GroupMessage {
+export type NotificationGroupMessage = {
   fromUserId: string;
-}
+} & Omit<GroupMessage, 'tempId'>;
 
 export interface GroupEvent {
   userId: string;
@@ -50,7 +52,6 @@ export interface NewChannel extends GroupEvent {
 // <<<<<<<<<<<<<<<<<<<<<<<<<<< ServerToClient <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 export interface ServerToClientEvents {
-  // TODO: List down all the events expected
   notification_general: () => void;
   notification_dm: (msg: NotificationDM) => void;
   notification_groupMessage: (msg: NotificationGroupMessage) => void;
@@ -58,10 +59,12 @@ export interface ServerToClientEvents {
   new_channel: (ev: NewChannel) => void;
   new_member: (ev: NewMember) => void;
   joined_voice: (ev: JoinedVoice) => void;
+
+  // Response events
+  message_not_saved: (ev: GroupMessage) => void;
 }
 
 export interface ClientToServerEvents {
-  // TODO: list down all client to server events expected
   join_app: () => void;
   join_group: (groupId: string) => void;
   join_voice: (groupId: string) => void;
@@ -93,5 +96,3 @@ export type IoSocket = Socket<
   InterServerEvents,
   SocketData
 > & { userId?: string; username?: string };
-
-// export function createSocketServer()

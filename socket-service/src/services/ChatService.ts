@@ -1,3 +1,4 @@
+import GRPCGroupClient from '../grpc/GRPCGroupClient';
 import {
   CreateChannelEvent,
   DirectMessage,
@@ -36,14 +37,22 @@ class ChatService {
     UserSocketMap.putSocket(socket.userId as string, socket.id);
   }
 
-  private async messageChannel(socket: IoSocket, msg: GroupMessage) {
+  private async messageChannel(
+    socket: IoSocket,
+    { tempId, ...msg }: GroupMessage,
+  ) {
     // TODO: Save the message in group
-    // TODO: Get group member ids
-    const socketIds = UserSocketMap.getSocketIdsForUsers([]);
-    this.io.to(socketIds).emit('notification_groupMessage', {
-      ...msg,
-      fromUserId: socket.userId as string,
-    });
+    try {
+      const res = await GRPCGroupClient.client.getMembers(msg.groupId);
+      const socketIds = UserSocketMap.getSocketIdsForUsers(res.members || []);
+      this.io.to(socketIds).emit('notification_groupMessage', {
+        ...msg,
+        fromUserId: socket.userId as string,
+      });
+    } catch (err) {
+      console.log('Error saving message', err);
+      socket.emit('message_not_saved', { tempId, ...msg });
+    }
   }
 
   private async messageFriend(socket: IoSocket, msg: DirectMessage) {
@@ -64,7 +73,14 @@ class ChatService {
   private async joinGroup(socket: IoSocket, groupId: string) {
     // User must join the group through the REST API only
     // After that is successful, then only this event should be triggered
-    // TODO: Get the rest of the group members and notify them
+    let members: Array<string> = [];
+    try {
+      const data = await GRPCGroupClient.client.getMembers(groupId);
+      if (data.members) members = data.members;
+    } catch (err) {
+      // Don't have to do anything, this is not a required event
+      // So no need to send any information back to the client
+    }
     const socketIds = UserSocketMap.getSocketIdsForUsers([]);
     this.io.to(socketIds).emit('new_member', {
       userId: socket.userId as string,
@@ -90,7 +106,14 @@ class ChatService {
     // The channel must be previously created through the REST API
     // After this is done, then only create_channel event should
     // get triggered with the generated id
-    // TODO: Get the group members
+    let members: Array<string> = [];
+    try {
+      const data = await GRPCGroupClient.client.getMembers(ev.groupId);
+      if (data.members) members = data.members;
+    } catch (err) {
+      // Don't have to do anything, this is not a required event
+      // So no need to send any information back to the client
+    }
     const socketIds = UserSocketMap.getSocketIdsForUsers([]);
     this.io.to(socketIds).emit('new_channel', {
       userId: socket.userId as string,
