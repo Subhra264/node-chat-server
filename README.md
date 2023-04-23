@@ -1,5 +1,7 @@
 # Node-chat-server
 
+![node-chat-server-HLD](https://user-images.githubusercontent.com/59690052/233828851-03403b4a-70b0-4170-8987-8147ab8415ed.png)
+
 This is a side project that was stared in April of the year 2021. The main goal was to build a production-ready, error-resistant, fast, and highly scalable chatting server with support for groups, text channels, voice channels, and self-messaging. It was first developed as a monolithic architecture with [**Redis caching**](https://redis.com/solutions/use-cases/caching/) and its [**publisher/subscriber**](https://redis.io/docs/manual/pubsub/) system integrated to establish communication between horizontally scaled server processes.
 
 However, recently the whole codebaes is being revamped to move to microservice architecture with `gRPC` support for information exchange between independently running services. Also, here instead of using `mongoose`, `Prisma` is used to easily move to another DB (e.g. `PostgreSQL`) with minimal changes if required.
