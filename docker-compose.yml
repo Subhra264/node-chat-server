@@ -1,0 +1,34 @@
+version: '3.9'
+services:
+  auth:
+    build: ./auth-service/
+    # ports:
+    #   - 8000:8000
+  group:
+    build: ./group-service/
+    # ports:
+    #   - 8000:8000
+  message:
+    build: ./message-service/
+    # ports:
+    #   - 8000:8000
+  rest:
+    build: ./rest-service/
+    # ports:
+    #   - 8000:8000
+  socket:
+    build: ./socket-service/
+    # ports:
+    #   - 8000:8000
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - auth
+      - group
+      - message
+      - rest
+      - socket
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+    ports:
+      - '8000:8000'
